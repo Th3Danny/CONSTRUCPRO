@@ -1,113 +1,79 @@
 package com.example.myapplication.home.presentation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    selectedTab: String,
+    onTabSelected: (String) -> Unit,
     postViewModel: PostViewModel,
     navController: NavController,
     onNavigateToChat: () -> Unit,
     onNavigateToProjects: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    NavigationBar(
+        containerColor = Color.Black,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        // Logo
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Construc",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Text(
-                text = "Pro",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF9800)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.Black)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Bienvenido a ConstrucPro",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    Icons.Filled.AddCircle,
+                    contentDescription = "Publicaciones",
+                    modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Botones de navegación con el mismo estilo
-                Button(
-                    onClick = { navController.navigate("Posts") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Ver Publicaciones", color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-                    onClick = { navController.navigate("Chat") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Chat", color = Color.Black)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-                    onClick = { navController.navigate("Projects") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Proyectos", color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-                    onClick = { navController.navigate("Notifications") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Notificaciones", color = Color.Black)
-                }
-            }
-        }
+            },
+            label = { Text("Publicaciones", color = Color.White, modifier = Modifier.padding(top = 0.dp)) },
+            selected = selectedTab == "Publicaciones",
+            onClick = { onTabSelected("Publicaciones") }
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    Icons.Filled.MailOutline,
+                    contentDescription = "Chat",
+                    modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)
+                )
+            },
+            label = { Text("Chat", color = Color.White, modifier = Modifier.padding(top = 0.dp)) },
+            selected = selectedTab == "Chat",
+            onClick = { onTabSelected("Chat") }
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    Icons.Filled.Info,
+                    contentDescription = "Proyectos",
+                    modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)
+                )
+            },
+            label = { Text("Proyectos", color = Color.White, modifier = Modifier.padding(top = 0.dp)) },
+            selected = selectedTab == "Proyectos",
+            onClick = { onTabSelected("Proyectos") }
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    Icons.Filled.Notifications,
+                    contentDescription = "Notificaciones",
+                    modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)
+                )
+            },
+            label = { Text("Notificaciones", color = Color.White, modifier = Modifier.padding(top = 0.dp)) },
+            selected = selectedTab == "Notificaciones",
+            onClick = { onTabSelected("Notificaciones") }
+        )
     }
 }

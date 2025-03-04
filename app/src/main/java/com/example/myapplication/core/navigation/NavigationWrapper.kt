@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -85,19 +89,25 @@ fun NavigationWrapper() {
             )
         }
 
-        // 🔹 Pantalla de Home (Publicaciones y Navegación)
         composable("Home") {
+
+            val selectedTab = remember { mutableStateOf("Publicaciones") }
+
             val postViewModel: PostViewModel = viewModel(
                 factory = PostViewModelFactory(postUseCase)
             )
 
             HomeScreen(
+                selectedTab = selectedTab.value,
+                onTabSelected = { selectedTab.value = it },
                 postViewModel = postViewModel,
                 navController = navController,
                 onNavigateToChat = { navController.navigate("Chat") },
                 onNavigateToProjects = { navController.navigate("Projects") }
             )
         }
+
+
 
         // 🔹 Pantalla de Chat
         composable("Chat") {

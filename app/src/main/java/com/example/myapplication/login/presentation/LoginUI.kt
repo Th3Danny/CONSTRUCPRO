@@ -41,12 +41,22 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "ConstrucPro",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFFF9800)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Construc",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Text(
+                text = "Pro",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFFF9800)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

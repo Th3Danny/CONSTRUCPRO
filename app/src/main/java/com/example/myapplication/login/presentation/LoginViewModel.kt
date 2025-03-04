@@ -30,28 +30,34 @@ class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
         viewModelScope.launch {
             Log.d("LoginViewModel", "onLogin iniciado con usuario: $email")
 
-            try {
-                val loginRequest = LoginRequest(
-                    email = email,  // Usar el parámetro recibido
-                    password = password
-                )
+            // Simulación: Permitir acceso con cualquier usuario temporalmente
+            _success.value = true
+            _error.value = ""
 
-                val result = loginUseCase(loginRequest)
-                result.onSuccess { loginResponse ->
-                    Log.d("LoginViewModel", "Login exitoso: Token recibido")
-                    _success.value = true
-                    _error.value = ""
-                    _token.value = loginResponse.token
-                }.onFailure { exception ->
-                    Log.e("LoginViewModel", "Login fallido: ${exception.message}")
-                    _success.value = false
-                    _error.value = exception.message ?: "Error desconocido"
-                }
-            } catch (e: Exception) {
-                Log.e("LoginViewModel", "Excepción: ${e.message}")
-                _success.value = false
-                _error.value = e.message ?: "Error al intentar realizar la operación"
-            }
+            // También podríamos asignar un token falso si fuera necesario
+            _token.value = "fake_token"
+            //try {
+                //val loginRequest = LoginRequest(
+                //    email = email,  // Usar el parámetro recibido
+              //      password = password
+//)
+
+              //  val result = loginUseCase(loginRequest)
+              //  result.onSuccess { loginResponse ->
+             //       Log.d("LoginViewModel", "Login exitoso: Token recibido")
+             //       _success.value = true
+             //       _error.value = ""
+           //         _token.value = loginResponse.token
+           //     }.onFailure { exception ->
+             //       Log.e("LoginViewModel", "Login fallido: ${exception.message}")
+            //        _success.value = false
+           //         _error.value = exception.message ?: "Error desconocido"
+          //      }
+        //    } catch (e: Exception) {
+         //       Log.e("LoginViewModel", "Excepción: ${e.message}")
+         //       _success.value = false
+          //      _error.value = e.message ?: "Error al intentar realizar la operación"
+         //   }
         }
     }
 
