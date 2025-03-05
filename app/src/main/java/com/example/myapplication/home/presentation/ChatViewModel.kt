@@ -10,12 +10,14 @@ import com.example.myapplication.home.data.model.Message
 
 class ChatViewModel(private val getMessagesUseCase: GetMessagesUseCase) : ViewModel() {
 
-    private val _messages = MutableLiveData<List<Message>>()
+    private val _messages = MutableLiveData<List<Message>>(emptyList())
     val messages: LiveData<List<Message>> = _messages
 
     fun fetchMessages(userId: String) {
         viewModelScope.launch {
-            getMessagesUseCase(userId).onSuccess { _messages.value = it }
+            val result = getMessagesUseCase(userId)
+            result.onSuccess { _messages.value = it }
+                .onFailure { _messages.value = emptyList() }
         }
     }
 }

@@ -13,14 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.core.navigation.BottomNavigationBar
-import com.example.myapplication.home.data.model.Post // ✅ Importa el modelo correcto
-
+import com.example.myapplication.home.data.model.Post
 @Composable
 fun PostScreen(navController: NavController, postViewModel: PostViewModel) {
-    val posts by postViewModel.posts.observeAsState(emptyList()) // ✅ Asegura que `posts` tenga el tipo correcto
+    val posts by postViewModel.posts.observeAsState(emptyList())
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +71,7 @@ fun PostScreen(navController: NavController, postViewModel: PostViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(posts) { post ->
-                        PostItem(post)
+                        PostCard(post)
                     }
                 }
             }
@@ -85,21 +83,21 @@ fun PostScreen(navController: NavController, postViewModel: PostViewModel) {
     }
 }
 
-// ✅ Asegúrate de que `PostItem` está definido
+
 @Composable
-fun PostItem(post: Post) {
+fun PostCard(post: Post) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Black),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(post.title, color = Color.White, style = MaterialTheme.typography.titleMedium)
+            Text(text = post.title, color = Color(0xFFFF9800), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(post.description, color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+            Text(text = post.description, color = Color.White, style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Autor: ${post.author}", color = Color.Gray, style = MaterialTheme.typography.labelSmall)
         }
     }
 }
+

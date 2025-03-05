@@ -8,15 +8,20 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.home.domain.GetPostsUseCase
 import com.example.myapplication.home.data.model.Post
 
+
 class PostViewModel(private val getPostsUseCase: GetPostsUseCase) : ViewModel() {
-    private val _posts = MutableLiveData<List<Post>>(emptyList())
+    private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts
 
-    fun fetchPosts() {
+    init {
+        fetchPosts()  // 🔹 Cargar datos al iniciar
+    }
+
+    private fun fetchPosts() {
         viewModelScope.launch {
             val result = getPostsUseCase()
-            result.onSuccess { postList ->
-                _posts.value = postList
+            result.onSuccess { posts ->
+                _posts.value = posts
             }.onFailure {
                 _posts.value = emptyList()
             }

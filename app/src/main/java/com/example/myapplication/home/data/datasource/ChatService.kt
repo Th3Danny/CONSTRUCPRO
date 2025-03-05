@@ -6,6 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ChatService {
-    @GET("/chat/{userId}")
+    @GET("chat/{userId}")
     suspend fun getMessages(@Path("userId") userId: String): Response<List<Message>>
 }
