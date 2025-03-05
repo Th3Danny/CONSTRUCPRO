@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "945503872115",
+    "project_id": "construcpro-811a9",
+    "storage_bucket": "construcpro-811a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945503872115:android:ddbb89b65a592f01263606",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg6a_u60kzYNFSAeJ-flRwBImDnYi4NZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

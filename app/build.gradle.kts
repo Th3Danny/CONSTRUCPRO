@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+    //id("com.google.firebase.firebase-messaging") //  Para FCM
 }
 
 android {
@@ -57,6 +59,12 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)  //LiveData
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
+
+    //FireBase
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    //implementation(platform("com.google.firebase:firebase-bom:32.7.2"))  Versión recomendada
+    implementation("com.google.firebase:firebase-messaging-ktx") // FCM para Kotlin
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
