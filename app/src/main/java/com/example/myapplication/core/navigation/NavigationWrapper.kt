@@ -1,71 +1,36 @@
 package com.example.myapplication.core.navigation
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.home.data.repository.ChatRepository
-import com.example.myapplication.home.data.repository.PostRepository
-import com.example.myapplication.home.data.repository.ProjectRepository
-import com.example.myapplication.home.domain.GetMessagesUseCase
-import com.example.myapplication.home.domain.GetPostsUseCase
-import com.example.myapplication.home.domain.GetProjectsUseCase
 import com.example.myapplication.home.presentation.ChatScreen
 import com.example.myapplication.home.presentation.HomeScreen
+import com.example.myapplication.home.presentation.NotificationScreen
 import com.example.myapplication.home.presentation.ProjectScreen
-import com.example.myapplication.home.presentation.ChatViewModel
-import com.example.myapplication.home.presentation.ChatViewModelFactory
-import com.example.myapplication.home.presentation.PostViewModel
-import com.example.myapplication.home.presentation.PostViewModelFactory
-import com.example.myapplication.home.presentation.ProjectViewModel
-import com.example.myapplication.home.presentation.ProjectViewModelFactory
-import com.example.myapplication.login.data.repository.AuthRepository
-import com.example.myapplication.login.domain.LoginUseCase
 import com.example.myapplication.login.presentation.LoginScreen
 import com.example.myapplication.login.presentation.LoginViewModel
 import com.example.myapplication.login.presentation.LoginViewModelFactory
-import com.example.myapplication.register.data.repository.RegisterRepository
-import com.example.myapplication.register.domain.RegisterUseCase
 import com.example.myapplication.register.presentation.RegisterScreen
 import com.example.myapplication.register.presentation.RegisterViewModel
 import com.example.myapplication.register.presentation.RegisterViewModelFactory
+import com.example.myapplication.login.domain.LoginUseCase
+import com.example.myapplication.login.data.repository.AuthRepository
+import com.example.myapplication.register.domain.RegisterUseCase
+import com.example.myapplication.register.data.repository.RegisterRepository
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
 
-    // Repositorios y Casos de Uso
-    val loginRepository = AuthRepository()
-    val loginUseCase = LoginUseCase(loginRepository)
-
-    val registerRepository = RegisterRepository()
-    val registerUseCase = RegisterUseCase(registerRepository)
-
-
-    val postRepository = PostRepository()
-    val postUseCase = GetPostsUseCase(postRepository)
-
-    val chatRepository = ChatRepository()
-    val chatUseCase = GetMessagesUseCase(chatRepository)
-
-    val projectRepository = ProjectRepository()
-    val projectUseCase = GetProjectsUseCase(projectRepository)
-
     NavHost(navController = navController, startDestination = "Login") {
         // 🔹 Pantalla de Inicio de Sesión
         composable("Login") {
             val loginViewModel: LoginViewModel = viewModel(
-                factory = LoginViewModelFactory(loginUseCase)
+                factory = LoginViewModelFactory(LoginUseCase(AuthRepository()))
             )
 
             LoginScreen(
@@ -89,47 +54,16 @@ fun NavigationWrapper() {
             )
         }
 
-        composable("Home") {
-
-            val selectedTab = remember { mutableStateOf("Publicaciones") }
-
-            val postViewModel: PostViewModel = viewModel(
-                factory = PostViewModelFactory(postUseCase)
-            )
-
-            HomeScreen(
-                selectedTab = selectedTab.value,
-                onTabSelected = { selectedTab.value = it },
-                postViewModel = postViewModel,
-                navController = navController,
-                onNavigateToChat = { navController.navigate("Chat") },
-                onNavigateToProjects = { navController.navigate("Projects") }
-            )
-        }
-
-
+        // 🔹 Pantalla de Home (Publicaciones)
+        composable("Home") { HomeScreen(navController) }
 
         // 🔹 Pantalla de Chat
-        composable("Chat") {
-            val chatViewModel: ChatViewModel = viewModel(
-                factory = ChatViewModelFactory(chatUseCase)
-            )
-
-            ChatScreen(
-                chatViewModel = chatViewModel,
-                userId = "user123"  // ID de prueba
-            )
-        }
+        composable("Chat") { ChatScreen(navController) }
 
         // 🔹 Pantalla de Proyectos
-        composable("Projects") {
-            val projectViewModel: ProjectViewModel = viewModel(
-                factory = ProjectViewModelFactory(projectUseCase)
-            )
+        composable("Projects") { ProjectScreen(navController) }
 
-            ProjectScreen(
-                projectViewModel = projectViewModel
-            )
-        }
+        // 🔹 Pantalla de Notificaciones
+        composable("Notifications") { NotificationScreen(navController) }
     }
 }

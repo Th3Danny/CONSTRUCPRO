@@ -1,4 +1,7 @@
 package com.example.myapplication.home.data.model
 
-class Notification {
-}
+data class Notification(
+    val id: String,         // ID único de la notificación
+    val title: String,      // Título de la notificación
+    val description: String // Descripción de la notificación
+)
