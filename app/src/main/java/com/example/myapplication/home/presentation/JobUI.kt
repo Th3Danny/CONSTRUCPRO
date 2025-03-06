@@ -1,6 +1,7 @@
 package com.example.myapplication.home.presentation
 
 import JobItem
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,30 +26,55 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
     var selectedTab by remember { mutableStateOf("Jobs") }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color.Black),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // 🔹 Logo ConstrucPro
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text(
+                text = "Construc",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "Pro",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFFF9800)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 🔹 Título de la sección
         Text(
             text = "Ofertas de Trabajo",
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFFF9800),
-            modifier = Modifier.padding(top = 16.dp)
+            color = Color(0xFFFF9800)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(horizontal = 16.dp)
         ) {
             items(jobs) { job ->
-                JobItem(job) // ✅ Usa JobItem aquí
+                JobItem(job) // ✅ Usa JobItem correctamente
             }
         }
 
         BottomNavigationBar(navController, selectedTab) { selectedTab = it }
     }
 }
+
 
 
 

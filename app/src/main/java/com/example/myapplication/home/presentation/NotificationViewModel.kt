@@ -8,7 +8,6 @@ import com.example.myapplication.home.data.model.Notification
 import com.example.myapplication.home.domain.GetNotificationsUseCase
 import kotlinx.coroutines.launch
 
-
 class NotificationViewModel(private val getNotificationsUseCase: GetNotificationsUseCase) : ViewModel() {
 
     private val _notifications = MutableLiveData<List<Notification>>()
@@ -21,7 +20,6 @@ class NotificationViewModel(private val getNotificationsUseCase: GetNotification
     private fun loadNotifications() {
         viewModelScope.launch {
             try {
-                // 🔹 Obtener datos reales desde la API
                 val result = getNotificationsUseCase()
                 _notifications.value = result.getOrDefault(emptyList())
             } catch (e: Exception) {

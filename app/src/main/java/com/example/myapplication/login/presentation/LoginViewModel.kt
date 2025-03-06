@@ -49,6 +49,9 @@ class LoginViewModel(
                     _error.value = ""
                     _token.value = loginResponse.token
 
+                    // 🔹 Guardamos el userId después del login
+                    saveUserId(loginResponse.id_user)
+
                     // 🔹 Guardar token en SharedPreferences
                     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
@@ -92,6 +95,17 @@ class LoginViewModel(
             }
         }
     }
+
+    private fun saveUserId(userId: Int) {
+        val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putInt("userId", userId)  // ✅ Solo guarda el userId
+            apply()
+        }
+        Log.d("LoginViewModel", "📡 userId guardado en SharedPreferences: $userId")
+    }
+
+
 
     fun onChangeUsername(username: String) {
         _username.value = username

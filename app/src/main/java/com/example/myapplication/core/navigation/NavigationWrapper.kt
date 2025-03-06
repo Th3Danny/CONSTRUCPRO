@@ -44,6 +44,7 @@ import com.example.myapplication.login.data.repository.AuthRepository
 import com.example.myapplication.register.domain.RegisterUseCase
 import com.example.myapplication.register.data.repository.RegisterRepository
 
+
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationWrapper() {
@@ -54,7 +55,9 @@ fun NavigationWrapper() {
     val registerRepository = RegisterRepository(registerService)
     val chatRepository = ChatRepository()
     val projectRepository = ProjectRepository()
-    val notificationRepository = NotificationRepository()
+    val context = LocalContext.current
+    val notificationRepository = NotificationRepository(context)
+
 
     // ✅ Crear instancias de los UseCase con los repositorios correctos
     val loginUseCase = LoginUseCase(loginRepository)
@@ -132,7 +135,7 @@ fun NavigationWrapper() {
         // 🔹 Pantalla de Notificaciones
         composable("Notifications") {
             val notificationViewModel: NotificationViewModel = viewModel(
-                factory = NotificationViewModelFactory(notificationUseCase)
+                factory = NotificationViewModelFactory(GetNotificationsUseCase(notificationRepository)) // ✅ Se usa el repo con contexto
             )
 
             NotificationScreen(
@@ -140,5 +143,6 @@ fun NavigationWrapper() {
                 navController = navController
             )
         }
+
     }
 }

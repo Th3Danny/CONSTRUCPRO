@@ -1,7 +1,8 @@
 package com.example.myapplication.home.data.model
 
 data class Notification(
-    val id: String,
+    val id: Int,
     val title: String,
-    val description: String
+    val body: String,
+    val sent_at: String
 )

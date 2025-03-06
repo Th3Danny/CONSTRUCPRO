@@ -1,5 +1,5 @@
 package com.example.myapplication.home.data.model
 
-class NotificationResponse {
+data class NotificationResponse(
     val data: List<Notification>
-}
+)
