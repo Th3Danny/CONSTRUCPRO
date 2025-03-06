@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.home.data.model.Job
 @Composable
-fun JobItem(job: Job) {
+fun JobItem(job: Job,onApplyClick: (Int) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
@@ -44,11 +44,10 @@ fun JobItem(job: Job) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { /* Acción para aplicar al trabajo */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
-                modifier = Modifier.fillMaxWidth()
+                onClick = { onApplyClick(job.id) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
             ) {
-                Text(text = "Aplicar", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Aplicar", color = Color.Black)
             }
         }
     }

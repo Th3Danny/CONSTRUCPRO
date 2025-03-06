@@ -2,6 +2,7 @@ package com.example.myapplication.home.domain
 
 import android.util.Log
 import com.example.myapplication.home.data.model.Job
+import com.example.myapplication.home.data.model.JobApplication
 import com.example.myapplication.home.data.repository.JobRepository
 
 class GetJobsUseCase(private val repository: JobRepository) {
@@ -16,3 +17,16 @@ class GetJobsUseCase(private val repository: JobRepository) {
     }
 }
 
+
+
+class GetPendingJobsUseCase(private val repository: JobRepository) {
+    suspend operator fun invoke(): Result<List<JobApplication>> {
+        return repository.getPendingJobs()
+    }
+}
+
+class GetAcceptedJobsUseCase(private val repository: JobRepository) {
+    suspend operator fun invoke(): Result<List<JobApplication>> {
+        return repository.getAcceptedJobs()
+    }
+}

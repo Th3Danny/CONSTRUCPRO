@@ -13,11 +13,14 @@ import com.example.myapplication.home.data.repository.JobRepository
 import com.example.myapplication.home.data.repository.NotificationRepository
 
 import com.example.myapplication.home.data.repository.ProjectRepository
+import com.example.myapplication.home.domain.GetAcceptedJobsUseCase
 import com.example.myapplication.home.domain.GetJobsUseCase
 import com.example.myapplication.home.domain.GetMessagesUseCase
 import com.example.myapplication.home.domain.GetNotificationsUseCase
+import com.example.myapplication.home.domain.GetPendingJobsUseCase
 
 import com.example.myapplication.home.domain.GetProjectsUseCase
+import com.example.myapplication.home.domain.PostJobsUseCase
 import com.example.myapplication.home.presentation.ChatScreen
 import com.example.myapplication.home.presentation.ChatViewModel
 import com.example.myapplication.home.presentation.ChatViewModelFactory
@@ -97,15 +100,22 @@ fun NavigationWrapper() {
 
         // 🔹 Pantalla de Home (Publicaciones)
         composable("Home") {
+            val jobRepository = JobRepository(LocalContext.current)
+            val getJobsUseCase = GetJobsUseCase(jobRepository)
+            val postJobsUseCase = PostJobsUseCase(jobRepository)
+            val getPendingJobsUseCase = GetPendingJobsUseCase(jobRepository) // ✅ Agregar el caso de uso
+            val getAcceptedJobsUseCase = GetAcceptedJobsUseCase(jobRepository) // ✅ Agregar el caso de uso
+
             val jobViewModel: JobViewModel = viewModel(
-                factory = JobViewModelFactory(GetJobsUseCase(JobRepository()))
+                factory = JobViewModelFactory(getJobsUseCase, getPendingJobsUseCase,getAcceptedJobsUseCase, postJobsUseCase) //)
             )
 
-            HomeScreen(
+            JobScreen(
                 navController = navController,
                 jobViewModel = jobViewModel
             )
         }
+
 
 
         // 🔹 Pantalla de Chat

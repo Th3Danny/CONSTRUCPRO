@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -26,6 +27,9 @@ class PushNotificationService : FirebaseMessagingService() {
 
         // 🔹 Enviamos el token al backend si hay usuario autenticado
         FirebaseHelper.sendTokenToServer(this, token)
+
+        // 🔹 Suscribirse al topic "global"
+        subscribeToGlobalTopic()
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -65,7 +69,7 @@ class PushNotificationService : FirebaseMessagingService() {
 
         val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-        // 🔹 Verificar permisos en Android 13+
+        // 🔹 Verificar permisos en Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ActivityCompat.checkSelfPermission(
                 applicationContext,
@@ -79,11 +83,24 @@ class PushNotificationService : FirebaseMessagingService() {
         // 🔹 Mostrar la notificación
         notificationManager.notify(notificationId, notification)
     }
+
     private fun saveFCMToken(token: String) {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putString("fcmToken", token)
             apply()
         }
+    }
+
+    // 🔹 Método para suscribirse al topic "global"
+    private fun subscribeToGlobalTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("global")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FCM", "✅ Suscripción exitosa al topic 'global'")
+                } else {
+                    Log.e("FCM", "❌ Error al suscribirse al topic", task.exception)
+                }
+            }
     }
 }
