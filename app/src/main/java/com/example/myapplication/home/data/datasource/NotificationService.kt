@@ -9,6 +9,6 @@ import retrofit2.http.Path
 
 interface NotificationService {
     @GET("notificationsLog/user/{userId}")
-    suspend fun getNotifications(@Path("userId") userId: Int): Response<NotificationResponse> // ✅ Retorna NotificationResponse
+    suspend fun getNotifications(@Path("userId") userId: Int): Response<NotificationResponse>
 }
 

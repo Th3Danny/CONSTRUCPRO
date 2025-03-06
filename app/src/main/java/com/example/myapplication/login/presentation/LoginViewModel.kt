@@ -45,24 +45,26 @@ class LoginViewModel(
                 val result = loginUseCase(loginRequest)
                 result.onSuccess { loginResponse ->
                     Log.d("LoginViewModel", "✅ Login exitoso, Token recibido")
+                    Log.d("LoginViewModel", "✅ userId en respuesta: ${loginResponse.data.idUser}")
+
                     _success.value = true
                     _error.value = ""
-                    _token.value = loginResponse.token
+                    _token.value = loginResponse.data.token
 
                     // 🔹 Guardamos el userId después del login
-                    saveUserId(loginResponse.id_user)
+                    saveUserId(loginResponse.data.idUser)
 
                     // 🔹 Guardar token en SharedPreferences
                     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
-                        putString("authToken", loginResponse.token)
+                        putString("authToken", loginResponse.data.token)
                         apply()
                     }
 
                     // 🔹 Ahora obtenemos el token FCM y lo enviamos al backend
                     sendFcmTokenToBackend()
-
-                }.onFailure { exception ->
+                }
+                    .onFailure { exception ->
                     Log.e("LoginViewModel", "❌ Login fallido: ${exception.message}")
                     _success.value = false
                     _error.value = exception.message ?: "Error desconocido"
@@ -104,8 +106,6 @@ class LoginViewModel(
         }
         Log.d("LoginViewModel", "📡 userId guardado en SharedPreferences: $userId")
     }
-
-
 
     fun onChangeUsername(username: String) {
         _username.value = username

@@ -1,8 +1,13 @@
 package com.example.myapplication.login.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginResponse(
-    val success: Boolean,
-    val id_user: Int,
-    val token: String?,   // Token JWT si el login es exitoso
-    val message: String?  // Mensaje en caso de error
+    @SerializedName("data") val data: LoginData
+)
+
+data class LoginData(
+    @SerializedName("id_user") val idUser: Int,
+    @SerializedName("access_token") val token: String,
+    @SerializedName("fcm") val fcmToken: String
 )
