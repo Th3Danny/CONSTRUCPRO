@@ -64,7 +64,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
     implementation("com.google.firebase:firebase-analytics")
     //implementation(platform("com.google.firebase:firebase-bom:32.7.2"))  Versión recomendada
-    implementation("com.google.firebase:firebase-messaging-ktx") // FCM para Kotlin
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation(libs.firebase.firestore.ktx) // FCM para Kotlin
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
@@ -12,19 +13,27 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import okhttp3.*
-import org.json.JSONObject
-import java.io.IOException
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class PushNotificationService : FirebaseMessagingService() {
 
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d("FCM", "Nuevo token de FCM: $token")
+
+        // 🔹 Guardamos el nuevo token de FCM
+        saveFCMToken(token)
+
+        // 🔹 Enviamos el token al backend si hay usuario autenticado
+        FirebaseHelper.sendTokenToServer(this, token)
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // Verificar si hay datos en la notificación
+        // 🔹 Verificar si la notificación contiene datos
         remoteMessage.notification?.let {
-            showNotification(it.title ?: "Notificación", it.body ?: "Mensaje recibido")
+            showNotification(it.title ?: "Nueva Notificación", it.body ?: "Mensaje recibido")
         }
     }
 
@@ -32,7 +41,7 @@ class PushNotificationService : FirebaseMessagingService() {
         val channelId = "firebase_channel"
         val notificationId = System.currentTimeMillis().toInt()
 
-        // Crear canal de notificación (para Android 8+)
+        // 🔹 Crear canal de notificación en Android 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -41,12 +50,11 @@ class PushNotificationService : FirebaseMessagingService() {
             ).apply {
                 description = "Canal para recibir notificaciones push de Firebase"
             }
-
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Construcción de la notificación
+        // 🔹 Construcción de la notificación
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
@@ -57,43 +65,25 @@ class PushNotificationService : FirebaseMessagingService() {
 
         val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-        // Verificar permisos en Android 13+
+        // 🔹 Verificar permisos en Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ActivityCompat.checkSelfPermission(
                 applicationContext,
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Aquí puedes solicitar el permiso en tu Activity principal si aún no se ha concedido
+            Log.w("FCM", "🚨 Permiso de notificaciones no concedido, no se mostrará la notificación.")
             return
         }
 
-        // Mostrar la notificación
+        // 🔹 Mostrar la notificación
         notificationManager.notify(notificationId, notification)
     }
-
-
-    private fun sendTokenToServer(token: String) {
-        val url = "https://tu-backend.com/api/token"  // 🔹 Cambia esto por tu API
-        val json = JSONObject().apply {
-            put("token", token)
+    private fun saveFCMToken(token: String) {
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("fcmToken", token)
+            apply()
         }
-        val body = RequestBody.create(MediaType.parse("application/json"), json.toString())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(body)
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("FCM", "Error enviando token al backend: ${e.message}")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                Log.d("FCM", "Token enviado con éxito al backend")
-            }
-        })
     }
 }

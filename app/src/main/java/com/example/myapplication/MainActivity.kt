@@ -1,14 +1,10 @@
 package com.example.myapplication
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.example.myapplication.core.navigation.NavigationWrapper
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.messaging.FirebaseMessaging
@@ -23,42 +19,29 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 🔹 Verificar y solicitar permisos
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                setupFirebaseMessaging()
-            }
-        } else {
-            setupFirebaseMessaging()
-        }
+        // 🔹 Solo obtenemos y guardamos el token, pero NO lo enviamos desde aquí.
+        setupFirebaseMessaging()
     }
 
-    // 🔹 Registrar permiso
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                Log.d("FCM", "Permiso concedido ")
-                setupFirebaseMessaging()
-            } else {
-                Log.w("FCM", "Permiso de notificaciones denegado ")
-            }
-        }
-
-    // 🔹 Configurar Firebase Messaging
+    // 🔹 Configurar Firebase Messaging (solo guarda el token)
     private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val token = task.result
-                Log.d("FCM", "Token del dispositivo: $token")
+                val tokenFCM = task.result
+                Log.d("FCM", "📡 Token de FCM obtenido: $tokenFCM")
+                saveFCMToken(tokenFCM)
             } else {
-                Log.w("FCM", "Error al obtener token", task.exception)
+                Log.w("FCM", "⚠ Error al obtener token de FCM", task.exception)
             }
+        }
+    }
+
+    // 🔹 Guardar el token en SharedPreferences
+    private fun saveFCMToken(token: String) {
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("fcmToken", token)
+            apply()
         }
     }
 }

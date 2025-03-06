@@ -1,5 +1,7 @@
 package com.example.myapplication.login.presentation
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -55,6 +57,8 @@ class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
             }
         }
     }
+
+
 
     fun onChangeUsername(username: String) {
         _username.value = username

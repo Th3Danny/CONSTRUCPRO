@@ -5,7 +5,7 @@ import com.example.myapplication.register.data.model.RegisterResponse
 import com.example.myapplication.register.data.repository.RegisterRepository
 
 class RegisterUseCase(private val repository: RegisterRepository) {
-    suspend operator fun invoke(request: RegisterRequest): Result<RegisterResponse> {
+    suspend operator fun invoke(request: RegisterRequest): Result<Unit> {
         return repository.register(request)
     }
 }

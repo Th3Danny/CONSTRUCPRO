@@ -1,5 +1,6 @@
 package com.example.myapplication.register.presentation
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,21 +16,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.messaging.FirebaseMessaging
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     registerViewModel: RegisterViewModel = viewModel(),
     navController: NavController,
     onNavigateToLogin: () -> Unit
 ) {
-    val user by registerViewModel.user.observeAsState("")
+    val username by registerViewModel.username.observeAsState("")
+    val name by registerViewModel.name.observeAsState("")
     val email by registerViewModel.email.observeAsState("")
     val password by registerViewModel.password.observeAsState("")
     val error by registerViewModel.error.observeAsState("")
     val success by registerViewModel.success.observeAsState(false)
 
-    // Redirección automática si el registro es exitoso
+    var fcmToken by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                fcmToken = task.result ?: ""
+                Log.d("FCM", "Token obtenido para registro: $fcmToken")
+            } else {
+                Log.e("FCM", "Error obteniendo token FCM", task.exception)
+            }
+        }
+    }
+
     LaunchedEffect(success) {
         if (success) {
             onNavigateToLogin()
@@ -41,7 +54,6 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -72,7 +84,6 @@ fun RegisterScreen(
                 modifier = Modifier.padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Tabs de Inicio / Registro
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -102,15 +113,29 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campos de texto
-                Text("Nombre", color = Color.White)
+                Text("Nombre de usuario", color = Color.White)
                 TextField(
-                    value = user,
-                    onValueChange = { registerViewModel.onChangeUser(it) },
+                    value = username,
+                    onValueChange = { registerViewModel.onChangeUsername(it) },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.White,
+                        unfocusedIndicatorColor = Color.Gray,
+                        cursorColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text("Nombre completo", color = Color.White)
+                TextField(
+                    value = name,
+                    onValueChange = { registerViewModel.onChangeName(it) },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.White,
                         unfocusedIndicatorColor = Color.Gray,
                         cursorColor = Color.White
@@ -127,7 +152,6 @@ fun RegisterScreen(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.White,
                         unfocusedIndicatorColor = Color.Gray,
                         cursorColor = Color.White
@@ -144,7 +168,6 @@ fun RegisterScreen(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.White,
                         unfocusedIndicatorColor = Color.Gray,
                         cursorColor = Color.White
@@ -155,25 +178,20 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Botón de registro
                 Button(
-                    onClick = { registerViewModel.onRegister() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF9800)
-                    ),
+                    onClick = { registerViewModel.onRegister(fcmToken) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Registro", color = Color.White)
+                    Text("Registrarse", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Mostrar error si lo hay
                 if (error.isNotEmpty()) {
                     Text(text = error, color = Color.Red)
                 }
 
-                // Link para volver al login
                 Text(
                     text = "¿Ya tienes cuenta? Inicia sesión",
                     color = Color.White,
@@ -184,3 +202,4 @@ fun RegisterScreen(
         }
     }
 }
+

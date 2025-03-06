@@ -1,7 +1,10 @@
 package com.example.myapplication.register.data.model
 
 data class RegisterRequest(
-    val user: String,
     val email: String,
-    val password: String
+    val password: String,
+    val username: String,
+    val name: String,
+    val fcm: String,
+    val roles: List<String> = listOf("USER")
 )

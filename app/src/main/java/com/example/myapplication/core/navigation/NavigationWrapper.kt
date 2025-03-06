@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.core.network.RetrofitHelper.registerService
 import com.example.myapplication.home.data.repository.ChatRepository
 import com.example.myapplication.home.data.repository.NotificationRepository
 import com.example.myapplication.home.data.repository.PostRepository
@@ -44,7 +45,7 @@ fun NavigationWrapper() {
 
     // ✅ Crear instancias de los repositorios
     val loginRepository = AuthRepository()
-    val registerRepository = RegisterRepository()
+    val registerRepository = RegisterRepository(registerService)
     val postRepository = PostRepository()
     val chatRepository = ChatRepository()
     val projectRepository = ProjectRepository()

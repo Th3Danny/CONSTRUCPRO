@@ -11,8 +11,11 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewModel() {
 
-    private val _user = MutableLiveData("")
-    val user: LiveData<String> = _user
+    private val _username = MutableLiveData("")
+    val username: LiveData<String> = _username
+
+    private val _name = MutableLiveData("")
+    val name: LiveData<String> = _name
 
     private val _email = MutableLiveData("")
     val email: LiveData<String> = _email
@@ -26,8 +29,12 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     private val _error = MutableLiveData("")
     val error: LiveData<String> = _error
 
-    fun onChangeUser(user: String) {
-        _user.value = user
+    fun onChangeUsername(username: String) {
+        _username.value = username
+    }
+
+    fun onChangeName(name: String) {
+        _name.value = name
     }
 
     fun onChangeEmail(email: String) {
@@ -38,14 +45,16 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         _password.value = password
     }
 
-    fun onRegister() {
+    fun onRegister(fcmToken: String) {
         viewModelScope.launch {
             Log.d("RegisterViewModel", "Intentando registrar usuario: ${_email.value}")
 
             val request = RegisterRequest(
-                user = _user.value ?: "",
+                username = _username.value ?: "",
+                name = _name.value ?: "",
                 email = _email.value ?: "",
-                password = _password.value ?: ""
+                password = _password.value ?: "",
+                fcm = fcmToken
             )
 
             val result = registerUseCase(request)
@@ -59,3 +68,4 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         }
     }
 }
+
