@@ -25,7 +25,7 @@ object RetrofitHelper {
     val loginService: LoginService = retrofit.create(LoginService::class.java)
     val registerService: RegisterService = retrofit.create(RegisterService::class.java)
     val chatService: ChatService = retrofit.create(ChatService::class.java)
-    val postService: PostService = retrofit.create(PostService::class.java)
+    val jobService: PostService = retrofit.create(PostService::class.java)
     val projectService: ProjectService = retrofit.create(ProjectService::class.java)
     val notificationService: NotificationService = retrofit.create(NotificationService::class.java)
 }

@@ -2,28 +2,34 @@ package com.example.myapplication.core.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.core.network.RetrofitHelper.registerService
 import com.example.myapplication.home.data.repository.ChatRepository
+import com.example.myapplication.home.data.repository.JobRepository
 import com.example.myapplication.home.data.repository.NotificationRepository
-import com.example.myapplication.home.data.repository.PostRepository
+
 import com.example.myapplication.home.data.repository.ProjectRepository
+import com.example.myapplication.home.domain.GetJobsUseCase
 import com.example.myapplication.home.domain.GetMessagesUseCase
 import com.example.myapplication.home.domain.GetNotificationsUseCase
-import com.example.myapplication.home.domain.GetPostsUseCase
+
 import com.example.myapplication.home.domain.GetProjectsUseCase
 import com.example.myapplication.home.presentation.ChatScreen
 import com.example.myapplication.home.presentation.ChatViewModel
 import com.example.myapplication.home.presentation.ChatViewModelFactory
 import com.example.myapplication.home.presentation.HomeScreen
+
+import com.example.myapplication.home.presentation.JobScreen
+import com.example.myapplication.home.presentation.JobViewModel
+import com.example.myapplication.home.presentation.JobViewModelFactory
 import com.example.myapplication.home.presentation.NotificationScreen
 import com.example.myapplication.home.presentation.NotificationViewModel
 import com.example.myapplication.home.presentation.NotificationViewModelFactory
-import com.example.myapplication.home.presentation.PostViewModel
-import com.example.myapplication.home.presentation.PostViewModelFactory
+
 import com.example.myapplication.home.presentation.ProjectScreen
 import com.example.myapplication.home.presentation.ProjectViewModel
 import com.example.myapplication.home.presentation.ProjectViewModelFactory
@@ -46,7 +52,6 @@ fun NavigationWrapper() {
     // ✅ Crear instancias de los repositorios
     val loginRepository = AuthRepository()
     val registerRepository = RegisterRepository(registerService)
-    val postRepository = PostRepository()
     val chatRepository = ChatRepository()
     val projectRepository = ProjectRepository()
     val notificationRepository = NotificationRepository()
@@ -54,7 +59,6 @@ fun NavigationWrapper() {
     // ✅ Crear instancias de los UseCase con los repositorios correctos
     val loginUseCase = LoginUseCase(loginRepository)
     val registerUseCase = RegisterUseCase(registerRepository)
-    val postUseCase = GetPostsUseCase(postRepository)
     val chatUseCase = GetMessagesUseCase(chatRepository)
     val projectUseCase = GetProjectsUseCase(projectRepository)
     val notificationUseCase = GetNotificationsUseCase(notificationRepository)
@@ -64,7 +68,7 @@ fun NavigationWrapper() {
         // 🔹 Pantalla de Inicio de Sesión
         composable("Login") {
             val loginViewModel: LoginViewModel = viewModel(
-                factory = LoginViewModelFactory(loginUseCase)
+                factory = LoginViewModelFactory(loginUseCase, LocalContext.current) // ✅ Ahora se pasa el contexto
             )
 
             LoginScreen(
@@ -90,15 +94,16 @@ fun NavigationWrapper() {
 
         // 🔹 Pantalla de Home (Publicaciones)
         composable("Home") {
-            val postViewModel: PostViewModel = viewModel(
-                factory = PostViewModelFactory(postUseCase)
+            val jobViewModel: JobViewModel = viewModel(
+                factory = JobViewModelFactory(GetJobsUseCase(JobRepository()))
             )
 
             HomeScreen(
                 navController = navController,
-                postViewModel = postViewModel
+                jobViewModel = jobViewModel
             )
         }
+
 
         // 🔹 Pantalla de Chat
         composable("Chat") {

@@ -20,7 +20,7 @@ fun BottomNavigationBar(navController: NavController, selectedTab: String, onTab
         modifier = Modifier.fillMaxWidth()
     ) {
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.AddCircle, contentDescription = "Publicaciones", modifier = Modifier.size(24.dp)) },
+            icon = { Icon(Icons.Filled.AddCircle, contentDescription = "Jobs", modifier = Modifier.size(24.dp)) },
             label = { Text("Publicaciones", color = Color.White) },
             selected = selectedTab == "Publicaciones",
             onClick = { onTabSelected("Publicaciones"); navController.navigate("Home") }
