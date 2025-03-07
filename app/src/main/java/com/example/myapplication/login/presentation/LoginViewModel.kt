@@ -44,33 +44,33 @@ class LoginViewModel(
 
                 val result = loginUseCase(loginRequest)
                 result.onSuccess { loginResponse ->
-                    Log.d("LoginViewModel", "✅ Login exitoso, Token recibido")
-                    Log.d("LoginViewModel", "✅ userId en respuesta: ${loginResponse.data.idUser}")
+                    Log.d("LoginViewModel", " Login exitoso, Token recibido")
+                    Log.d("LoginViewModel", " userId en respuesta: ${loginResponse.data.idUser}")
 
                     _success.value = true
                     _error.value = ""
                     _token.value = loginResponse.data.token
 
-                    // 🔹 Guardamos el userId después del login
+                    //  Guardamos el userId después del login
                     saveUserId(loginResponse.data.idUser)
 
-                    // 🔹 Guardar token en SharedPreferences
+                    //  Guardar token en SharedPreferences
                     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
                         putString("authToken", loginResponse.data.token)
                         apply()
                     }
 
-                    // 🔹 Ahora obtenemos el token FCM y lo enviamos al backend
+                    //  Ahora obtenemos el token FCM y lo enviamos al backend
                     sendFcmTokenToBackend()
                 }
                     .onFailure { exception ->
-                    Log.e("LoginViewModel", "❌ Login fallido: ${exception.message}")
+                    Log.e("LoginViewModel", " Login fallido: ${exception.message}")
                     _success.value = false
                     _error.value = exception.message ?: "Error desconocido"
                 }
             } catch (e: Exception) {
-                Log.e("LoginViewModel", "❌ Excepción en el login: ${e.message}")
+                Log.e("LoginViewModel", " Excepción en el login: ${e.message}")
                 _success.value = false
                 _error.value = e.message ?: "Error al intentar realizar la operación"
             }
@@ -82,7 +82,7 @@ class LoginViewModel(
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val fcmToken = task.result
-                Log.d("FCM", "📡 Token FCM en login: $fcmToken")
+                Log.d("FCM", " Token FCM en login: $fcmToken")
 
                 val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
                 val authToken = sharedPreferences.getString("authToken", "")
@@ -90,7 +90,7 @@ class LoginViewModel(
                 if (!authToken.isNullOrEmpty()) {
                     FirebaseHelper.sendTokenToServer(context, fcmToken)
                 } else {
-                    Log.e("FCM", "🚨 No se enviará el token de FCM porque el usuario no ha iniciado sesión.")
+                    Log.e("FCM", " No se enviará el token de FCM porque el usuario no ha iniciado sesión.")
                 }
             } else {
                 Log.w("FCM", "Error al obtener token de FCM en login", task.exception)
@@ -101,7 +101,7 @@ class LoginViewModel(
     private fun saveUserId(userId: Int) {
         val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            putInt("userId", userId)  // ✅ Solo guarda el userId
+            putInt("userId", userId)
             apply()
         }
         Log.d("LoginViewModel", "📡 userId guardado en SharedPreferences: $userId")

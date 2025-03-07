@@ -13,7 +13,7 @@ class LoginViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(loginUseCase, context) as T // ✅ Se pasa correctamente el context
+            return LoginViewModel(loginUseCase, context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

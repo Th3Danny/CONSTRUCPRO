@@ -117,6 +117,7 @@ fun RegisterScreen(
                 TextField(
                     value = username,
                     onValueChange = { registerViewModel.onChangeUsername(it) },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -133,6 +134,7 @@ fun RegisterScreen(
                 TextField(
                     value = name,
                     onValueChange = { registerViewModel.onChangeName(it) },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -149,6 +151,7 @@ fun RegisterScreen(
                 TextField(
                     value = email,
                     onValueChange = { registerViewModel.onChangeEmail(it) },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -165,6 +168,7 @@ fun RegisterScreen(
                 TextField(
                     value = password,
                     onValueChange = { registerViewModel.onChangePassword(it) },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,

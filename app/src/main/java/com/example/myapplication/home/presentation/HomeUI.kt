@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 
 import androidx.navigation.NavController
 import com.example.myapplication.core.navigation.BottomNavigationBar
+import com.example.myapplication.job.presentation.JobScreen
+import com.example.myapplication.job.presentation.JobViewModel
 
 
 @Composable
@@ -26,7 +28,7 @@ fun HomeScreen(navController: NavController, jobViewModel: JobViewModel) {
             modifier = Modifier.padding(16.dp)
         )
 
-        // ✅ Agregar pestañas para cambiar entre Jobs y Posts
+        //  Agregar pestañas para cambiar entre Jobs y Posts
         TabRow(
             selectedTabIndex = if (selectedTab == "Jobs") 0 else 1,
             modifier = Modifier.fillMaxWidth()
@@ -45,13 +47,13 @@ fun HomeScreen(navController: NavController, jobViewModel: JobViewModel) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ✅ Mostrar la sección correspondiente
+        //  Mostrar la sección correspondiente
         when (selectedTab) {
             "Jobs" -> JobScreen(navController, jobViewModel)
-           // "Posts" -> PostScreen(navController) // Si hay una pantalla para Posts, úsala aquí
+
         }
 
-        // ✅ Agregar la barra de navegación al final
+        //  Agregar la barra de navegación al final
         BottomNavigationBar(navController, selectedTab) { selectedTab = it }
     }
 }
