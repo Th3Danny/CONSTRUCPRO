@@ -104,7 +104,7 @@ class LoginViewModel(
             putInt("userId", userId)
             apply()
         }
-        Log.d("LoginViewModel", "📡 userId guardado en SharedPreferences: $userId")
+        Log.d("LoginViewModel", " userId guardado en SharedPreferences: $userId")
     }
 
     fun onChangeUsername(username: String) {

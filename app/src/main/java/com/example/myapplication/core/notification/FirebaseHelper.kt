@@ -16,7 +16,7 @@ object FirebaseHelper {
         val authToken = sharedPreferences.getString("authToken", "") ?: ""
 
         if (authToken.isEmpty()) {
-            Log.e("FCM", "🚨 No hay token de autenticación guardado, no se enviará el token FCM.")
+            Log.e("FCM", " No hay token de autenticación guardado, no se enviará el token FCM.")
             return
         }
 
@@ -30,7 +30,7 @@ object FirebaseHelper {
 
         val request = Request.Builder()
             .url(url)
-            .addHeader("Authorization", "Bearer $authToken") // ✅ Token dinámico
+            .addHeader("Authorization", "Bearer $authToken") // Token dinámico
             .post(body)
             .build()
 
@@ -42,10 +42,10 @@ object FirebaseHelper {
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    Log.d("FCM", "✅ Token de FCM enviado con éxito al backend")
+                    Log.d("FCM", " Token de FCM enviado con éxito al backend")
                 } else {
-                    Log.e("FCM", "⚠ Fallo al enviar token: Código HTTP ${response.code()} - ${response.message()}")
-                    Log.e("FCM", "🔍 Respuesta del servidor: ${response.body()?.string()}")
+                    Log.e("FCM", " Fallo al enviar token: Código HTTP ${response.code()} - ${response.message()}")
+                    Log.e("FCM", " Respuesta del servidor: ${response.body()?.string()}")
                 }
             }
         })

@@ -26,7 +26,7 @@ fun NotificationScreen(navController: NavController, notificationViewModel: Noti
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🔹 Cabecera
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -41,7 +41,7 @@ fun NotificationScreen(navController: NavController, notificationViewModel: Noti
             )
         }
 
-        // 🔹 Lista de Notificaciones
+        //  Lista de Notificaciones
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -52,7 +52,7 @@ fun NotificationScreen(navController: NavController, notificationViewModel: Noti
             }
         }
 
-        // 🔹 Barra de Navegación Inferior
+
         BottomNavigationBar(navController, selectedTab) { selectedTab = it }
     }
 }
