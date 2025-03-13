@@ -19,11 +19,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 🔹 Solo obtenemos y guardamos el token, pero NO lo enviamos desde aquí.
+
         setupFirebaseMessaging()
     }
 
-    // 🔹 Configurar Firebase Messaging (solo guarda el token)
+
     private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {

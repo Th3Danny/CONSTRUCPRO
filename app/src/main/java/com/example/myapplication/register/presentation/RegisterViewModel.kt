@@ -30,38 +30,47 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     val error: LiveData<String> = _error
 
     fun onChangeUsername(username: String) {
+        Log.d("RegisterViewModel", " Usuario cambiado: $username")
         _username.value = username
     }
 
     fun onChangeName(name: String) {
+        Log.d("RegisterViewModel", " Nombre cambiado: $name")
         _name.value = name
     }
 
     fun onChangeEmail(email: String) {
+        Log.d("RegisterViewModel", " Correo cambiado: $email")
         _email.value = email
     }
 
     fun onChangePassword(password: String) {
+        Log.d("RegisterViewModel", " Contraseña cambiada")
         _password.value = password
     }
 
     fun onRegister(fcmToken: String) {
         viewModelScope.launch {
-            Log.d("RegisterViewModel", "Intentando registrar usuario: ${_email.value}")
+            Log.d("RegisterViewModel", "📡 Intentando registrar usuario: ${_email.value}")
 
             val request = RegisterRequest(
                 username = _username.value ?: "",
                 name = _name.value ?: "",
                 email = _email.value ?: "",
                 password = _password.value ?: "",
-                fcm = fcmToken
+                fcm = fcmToken,
+                roles = listOf("USER")
             )
+
+            Log.d("RegisterViewModel", " Payload de Registro: $request")
 
             val result = registerUseCase(request)
             result.onSuccess {
+                Log.d("RegisterViewModel", " Registro exitoso para ${request.email}")
                 _success.value = true
                 _error.value = ""
             }.onFailure { exception ->
+                Log.e("RegisterViewModel", " Error en el registro: ${exception.message}")
                 _success.value = false
                 _error.value = exception.message ?: "Error desconocido"
             }

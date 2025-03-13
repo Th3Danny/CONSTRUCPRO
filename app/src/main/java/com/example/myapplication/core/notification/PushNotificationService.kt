@@ -22,20 +22,20 @@ class PushNotificationService : FirebaseMessagingService() {
         super.onNewToken(token)
         Log.d("FCM", "Nuevo token de FCM: $token")
 
-        // 🔹 Guardamos el nuevo token de FCM
+        //  Guardamos el nuevo token de FCM
         saveFCMToken(token)
 
-        // 🔹 Enviamos el token al backend si hay usuario autenticado
+        //  Enviamos el token al backend si hay usuario autenticado
         FirebaseHelper.sendTokenToServer(this, token)
 
-        // 🔹 Suscribirse al topic "global"
+        //  Suscribirse al topic "global"
         subscribeToGlobalTopic()
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // 🔹 Verificar si la notificación contiene datos
+        //  Verificar si la notificación contiene datos
         remoteMessage.notification?.let {
             showNotification(it.title ?: "Nueva Notificación", it.body ?: "Mensaje recibido")
         }
@@ -45,7 +45,7 @@ class PushNotificationService : FirebaseMessagingService() {
         val channelId = "firebase_channel"
         val notificationId = System.currentTimeMillis().toInt()
 
-        // 🔹 Crear canal de notificación en Android 8+
+        // Crear canal de notificación en Android 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -58,7 +58,7 @@ class PushNotificationService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // 🔹 Construcción de la notificación
+        //  Construcción de la notificación
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
@@ -76,11 +76,11 @@ class PushNotificationService : FirebaseMessagingService() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.w("FCM", "🚨 Permiso de notificaciones no concedido, no se mostrará la notificación.")
+            Log.w("FCM", " Permiso de notificaciones no concedido, no se mostrará la notificación.")
             return
         }
 
-        // 🔹 Mostrar la notificación
+        //  Mostrar la notificación
         notificationManager.notify(notificationId, notification)
     }
 
@@ -92,14 +92,14 @@ class PushNotificationService : FirebaseMessagingService() {
         }
     }
 
-    // 🔹 Método para suscribirse al topic "global"
+    //  Método para suscribirse al topic "global"
     private fun subscribeToGlobalTopic() {
         FirebaseMessaging.getInstance().subscribeToTopic("global")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("FCM", "✅ Suscripción exitosa al topic 'global'")
+                    Log.d("FCM", "Suscripción exitosa al topic 'global'")
                 } else {
-                    Log.e("FCM", "❌ Error al suscribirse al topic", task.exception)
+                    Log.e("FCM", "Error al suscribirse al topic", task.exception)
                 }
             }
     }
