@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21" apply true
     //id("com.google.firebase.firebase-messaging") //  Para FCM
 }
 
@@ -59,6 +60,10 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)  //LiveData
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
+
+    //rooms
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     //FireBase
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))

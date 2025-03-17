@@ -2,12 +2,15 @@ package com.example.myapplication.job.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.example.myapplication.core.data.local.entities.PendingJobApplicationEntity
 import com.example.myapplication.core.network.RetrofitHelper
 import com.example.myapplication.job.data.model.Job
 import com.example.myapplication.job.data.model.JobApplication
 import com.example.myapplication.job.data.model.JobApplicationRequest
 import com.example.myapplication.job.data.model.JobApplicationResponse
 import com.example.myapplication.job.data.model.JobResponse
+import retrofit2.HttpException
+import java.io.IOException
 
 
 class JobRepository(private val context: Context) {
@@ -113,36 +116,32 @@ class JobRepository(private val context: Context) {
     }
 
 
-    suspend fun applyForJob(jobId: Int): Result<Boolean> {
-        return try {
-            val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-            val userId = sharedPreferences.getInt("userId", -1)
+    suspend fun applyForJob(jobId: Int, applicantId: Int) {
+        try {
+            val request = JobApplicationRequest(jobId, applicantId)
+            val response = jobService.applyToJob(request)
 
-            if (userId == -1) {
-                Log.e("JobRepository", "🚨 No se encontró userId en SharedPreferences")
-                return Result.failure(Exception("Usuario no autenticado"))
+            if (!response.isSuccessful) {
+                throw HttpException(response)
             }
 
-            Log.d("JobRepository", "📡 Aplicando a trabajo con jobId: $jobId para userId: $userId")
-
-            val requestBody = JobApplicationRequest(
-                job_id = jobId,
-                applicant_id = userId
-            )
-
-            val response = jobServicePost.applyToJob(requestBody)
-
-            if (response.isSuccessful) {
-                Log.d("JobRepository", "✅ Aplicación enviada con éxito para jobId: $jobId")
-                return Result.success(true)
-            } else {
-                Log.e("JobRepository", "⚠ Error al aplicar al trabajo: ${response.errorBody()?.string()}")
-                return Result.failure(Exception("Error al aplicar al trabajo"))
-            }
-        } catch (e: Exception) {
-            Log.e("JobRepository", "🚨 Excepción al aplicar a trabajo: ${e.message}")
-            return Result.failure(e)
+            Log.d("JobRepository", "✅ Aplicación enviada con éxito para jobId: $jobId")
+        } catch (e: IOException) {
+            Log.e("JobRepository", "⚠ No hay conexión a internet, guardando en Room...")
+            savePendingApplication(jobId, applicantId)
+        } catch (e: HttpException) {
+            Log.e("JobRepository", "❌ Error en la API: ${e.message()}")
         }
+    }
+
+    private suspend fun savePendingApplication(jobId: Int, applicantId: Int) {
+        val pendingApplication = PendingJobApplicationEntity(jobId = jobId, applicantId = applicantId)
+        pendingJobApplicationDao.insertPendingApplication(pendingApplication)
+        Log.d("JobRepository", "📌 Aplicación guardada en Room para sincronización futura.")
+    }
+
+    suspend fun getAllPendingApplications(): List<PendingJobApplicationEntity> {
+        return pendingJobApplicationDao.getAllPendingApplications()
     }
 }
 
