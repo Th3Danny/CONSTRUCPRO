@@ -1,5 +1,6 @@
 package com.example.myapplication.job.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.example.myapplication.job.domain.PostJobsUseCase
 
 
 class JobViewModel(
+    private val context: Context,
     private val getJobsUseCase: GetJobsUseCase,
     private val getPendingJobsUseCase: GetPendingJobsUseCase,
     private val getAcceptedJobsUseCase: GetAcceptedJobsUseCase,
@@ -75,9 +77,9 @@ class JobViewModel(
         }
     }
 
-    fun applyToJob(jobId: Int) {
+    fun applyToJob(jobId: Int, applicantId: Int) { // ✅ Ahora acepta dos parámetros
         viewModelScope.launch {
-            val result = postJobsUseCase(jobId)
+            val result = postJobsUseCase(jobId, applicantId) // ✅ Llamamos a la UseCase con ambos valores
             result.onSuccess {
                 _applicationSuccess.value = true
                 fetchPendingJobs() // ✅ Actualizar lista de pendientes tras aplicar
@@ -86,4 +88,5 @@ class JobViewModel(
             }
         }
     }
+
 }

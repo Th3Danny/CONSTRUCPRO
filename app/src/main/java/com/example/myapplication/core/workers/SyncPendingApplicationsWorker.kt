@@ -2,8 +2,7 @@ package com.example.myapplication.core.workers
 
 import android.content.Context
 import android.util.Log
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.example.myapplication.core.data.local.AppDatabase
 import com.example.myapplication.job.data.repository.JobRepository
 

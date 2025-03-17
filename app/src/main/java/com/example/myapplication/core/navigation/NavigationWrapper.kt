@@ -24,6 +24,7 @@ import com.example.myapplication.job.domain.PostJobsUseCase
 import com.example.myapplication.chat.presentation.ChatScreen
 import com.example.myapplication.chat.presentation.ChatViewModel
 import com.example.myapplication.chat.presentation.ChatViewModelFactory
+import com.example.myapplication.core.data.local.AppDatabase
 
 import com.example.myapplication.job.presentation.JobScreen
 import com.example.myapplication.job.presentation.JobViewModel
@@ -99,14 +100,17 @@ fun NavigationWrapper() {
 
         //  Pantalla de Home (Publicaciones)
         composable("Home") {
-            val jobRepository = JobRepository(LocalContext.current)
+            val context = LocalContext.current
+            val database = AppDatabase.getDatabase(context) // ✅ Obtener la instancia de la base de datos
+            val jobRepository = JobRepository(context, database.pendingJobApplicationDao()) // ✅ Pasar el DAO necesario
+
             val getJobsUseCase = GetJobsUseCase(jobRepository)
             val postJobsUseCase = PostJobsUseCase(jobRepository)
             val getPendingJobsUseCase = GetPendingJobsUseCase(jobRepository)
             val getAcceptedJobsUseCase = GetAcceptedJobsUseCase(jobRepository)
 
             val jobViewModel: JobViewModel = viewModel(
-                factory = JobViewModelFactory(getJobsUseCase, getPendingJobsUseCase,getAcceptedJobsUseCase, postJobsUseCase) //)
+                factory = JobViewModelFactory(context, getJobsUseCase, getPendingJobsUseCase, getAcceptedJobsUseCase, postJobsUseCase)
             )
 
             JobScreen(
@@ -114,6 +118,7 @@ fun NavigationWrapper() {
                 jobViewModel = jobViewModel
             )
         }
+
 
 
 

@@ -1,20 +1,21 @@
 package com.example.myapplication.core.workers
 
 import android.content.Context
-import androidx.compose.ui.unit.Constraints
-import com.google.android.datatransport.cct.internal.NetworkConnectionInfo
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 
 class WorkManagerScheduler {
     fun schedulePendingApplicationsSync(context: Context) {
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkConnectionInfo.NetworkType.CONNECTED) // ✅ Se ejecuta solo si hay internet
+            .setRequiredNetworkType(NetworkType.CONNECTED) // ✅ Se ejecuta solo si hay internet
             .build()
 
-        val workRequest = OneTimeWorkRequestBuilder<SyncPendingApplicationsWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<SyncJobApplicationWorker>() // ✅ Asegurar que exista
             .setConstraints(constraints)
             .build()
 
         WorkManager.getInstance(context).enqueue(workRequest)
     }
-
 }

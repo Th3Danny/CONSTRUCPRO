@@ -1,5 +1,7 @@
 package com.example.myapplication.job.presentation
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,6 +28,11 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
     val pendingJobs by jobViewModel.pendingJobs.observeAsState(emptyList())
     val acceptedJobs by jobViewModel.acceptedJobs.observeAsState(emptyList())
     var selectedTab by remember { mutableStateOf("Ofertas") }
+
+    // ✅ Obtener contexto una sola vez
+    val context = LocalContext.current
+    val sharedPreferences = remember { context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE) }
+    val applicantId = remember { sharedPreferences.getInt("userId", -1) } // ✅ Guardar en remember para evitar múltiples llamadas
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color.Black),
@@ -58,7 +66,13 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
             when (selectedTab) {
                 "Ofertas" -> {
                     items(jobs) { job ->
-                        JobItem(job, jobViewModel::applyToJob)
+                        JobItem(job) { jobId ->
+                            if (applicantId != -1) {
+                                jobViewModel.applyToJob(jobId, applicantId) // ✅ Ahora pasamos ambos valores
+                            } else {
+                                Log.e("JobScreen", "🚨 Usuario no autenticado")
+                            }
+                        }
                     }
                 }
                 "Pendientes" -> {

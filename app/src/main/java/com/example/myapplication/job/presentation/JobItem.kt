@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.job.data.model.Job
 @Composable
-fun JobItem(job: Job, onApplyClick: (Int) -> Unit) {
+fun JobItem(job: Job, onApplyClick: (Int) -> Unit) { // 🔹 Quitar @Composable aquí
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
@@ -46,7 +46,7 @@ fun JobItem(job: Job, onApplyClick: (Int) -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { onApplyClick(job.id) },
+                onClick = { onApplyClick(job.id) }, // ✅ Esto ahora es válido
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
             ) {
                 Text("Aplicar", color = Color.Black)
@@ -54,4 +54,5 @@ fun JobItem(job: Job, onApplyClick: (Int) -> Unit) {
         }
     }
 }
+
 

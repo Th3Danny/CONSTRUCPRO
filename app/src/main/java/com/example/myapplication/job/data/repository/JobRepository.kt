@@ -2,6 +2,7 @@ package com.example.myapplication.job.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.example.myapplication.core.data.local.dao.PendingJobApplicationDao
 import com.example.myapplication.core.data.local.entities.PendingJobApplicationEntity
 import com.example.myapplication.core.network.RetrofitHelper
 import com.example.myapplication.job.data.model.Job
@@ -13,9 +14,12 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-class JobRepository(private val context: Context) {
+class JobRepository(
+    private val context: Context,
+    private val pendingJobApplicationDao: PendingJobApplicationDao
+) {
     private val jobService = RetrofitHelper.jobService
-    private val jobServicePost = RetrofitHelper.JobServicePost
+    private val  jobServicePost = RetrofitHelper.JobServicePost
     suspend fun getJobs(): Result<List<Job>> {
         return try {
             val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
@@ -116,23 +120,26 @@ class JobRepository(private val context: Context) {
     }
 
 
-    suspend fun applyForJob(jobId: Int, applicantId: Int) {
-        try {
+    suspend fun applyForJob(jobId: Int, applicantId: Int): Result<Boolean> {
+        return try {
             val request = JobApplicationRequest(jobId, applicantId)
-            val response = jobService.applyToJob(request)
+            val response = jobServicePost.applyToJob(request)
 
             if (!response.isSuccessful) {
                 throw HttpException(response)
             }
 
-            Log.d("JobRepository", "✅ Aplicación enviada con éxito para jobId: $jobId")
+            Result.success(true) // ✅ Devuelve `Result<Boolean>` en caso de éxito
         } catch (e: IOException) {
             Log.e("JobRepository", "⚠ No hay conexión a internet, guardando en Room...")
             savePendingApplication(jobId, applicantId)
+            Result.success(false) // ✅ Indica que la aplicación fue almacenada localmente
         } catch (e: HttpException) {
             Log.e("JobRepository", "❌ Error en la API: ${e.message()}")
+            Result.failure(e) // ✅ Devuelve un fallo en caso de error de API
         }
     }
+
 
     private suspend fun savePendingApplication(jobId: Int, applicantId: Int) {
         val pendingApplication = PendingJobApplicationEntity(jobId = jobId, applicantId = applicantId)

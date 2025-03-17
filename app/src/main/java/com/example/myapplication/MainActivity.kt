@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.myapplication.core.navigation.NavigationWrapper
+import com.example.myapplication.core.workers.WorkManagerScheduler
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -13,15 +14,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 🔹 Configurar UI con Jetpack Compose
         setContent {
             MyApplicationTheme {
                 NavigationWrapper()
             }
         }
 
+        // 📌 Agregar sincronización de solicitudes pendientes cuando la app se abre
+        val workManagerScheduler = WorkManagerScheduler()
+        workManagerScheduler.schedulePendingApplicationsSync(this)
+
+        // 📌 Configurar Firebase Messaging para recibir notificaciones
         setupFirebaseMessaging()
     }
-
 
     private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->

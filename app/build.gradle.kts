@@ -65,6 +65,10 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    //works
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation("androidx.work:work-gcm:2.8.1")
+
     //FireBase
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
     implementation("com.google.firebase:firebase-analytics")
