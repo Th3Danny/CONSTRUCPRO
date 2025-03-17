@@ -64,10 +64,14 @@ dependencies {
     //rooms
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+    implementation("com.facebook.stetho:stetho:1.6.0")
+    implementation("com.facebook.stetho:stetho-okhttp3:1.6.0")
 
     //works
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.work:work-gcm:2.8.1")
+
+
 
     //FireBase
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
