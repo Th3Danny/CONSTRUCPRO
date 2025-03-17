@@ -15,7 +15,7 @@ class SyncJobApplicationWorker(
     private val repository = JobRepository(context, database.pendingJobApplicationDao())
 
     override suspend fun doWork(): Result {
-        Log.d("SyncWorker", "🚀 Iniciando sincronización de aplicaciones pendientes...")
+        Log.d("SyncWorker", "🚀 Iniciando sincronización en segundo plano...")
 
         val pendingApplications = repository.getAllPendingApplications()
         if (pendingApplications.isEmpty()) {
@@ -33,7 +33,6 @@ class SyncJobApplicationWorker(
                 return Result.retry() // 🔄 Reintenta si falla
             }
         }
-
         return Result.success()
     }
 }

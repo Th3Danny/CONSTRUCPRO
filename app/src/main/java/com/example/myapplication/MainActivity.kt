@@ -1,18 +1,18 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.myapplication.core.navigation.NavigationWrapper
-import com.example.myapplication.core.workers.WorkManagerScheduler
-import com.example.myapplication.receiver.NetworkMonitor
+import com.example.myapplication.core.service.NetworkMonitorService
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
-    private lateinit var networkMonitor: NetworkMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,17 +24,16 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 📌 Iniciar monitoreo de red para detectar cambios de conexión
-        networkMonitor = NetworkMonitor(this)
-        networkMonitor.startMonitoring()
+
+        // 📌 Iniciar el servicio en segundo plano para monitorear la conexión
+        val serviceIntent = Intent(this, NetworkMonitorService::class.java)
+        startForegroundService(serviceIntent)
+
 
         // 📌 Configurar Firebase Messaging para recibir notificaciones
         setupFirebaseMessaging()
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        networkMonitor.stopMonitoring()
-    }
+
 
     private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -56,6 +55,5 @@ class MainActivity : ComponentActivity() {
             apply()
         }
     }
-
 
 }
