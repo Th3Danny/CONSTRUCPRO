@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
 
-        // 🔹 Configurar UI con Jetpack Compose
+
         setContent {
             MyApplicationTheme {
                 NavigationWrapper()
@@ -25,12 +25,12 @@ class MainActivity : ComponentActivity() {
         }
 
 
-        // 📌 Iniciar el servicio en segundo plano para monitorear la conexión
+        //  Iniciar el servicio en segundo plano para monitorear la conexión
         val serviceIntent = Intent(this, NetworkMonitorService::class.java)
         startForegroundService(serviceIntent)
 
 
-        // 📌 Configurar Firebase Messaging para recibir notificaciones
+        //  Configurar Firebase Messaging para recibir notificaciones
         setupFirebaseMessaging()
     }
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // 🔹 Guardar el token en SharedPreferences
+    //  Guardar el token en SharedPreferences
     private fun saveFCMToken(token: String) {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {

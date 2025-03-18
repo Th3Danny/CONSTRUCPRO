@@ -46,16 +46,16 @@ class JobViewModel(
         viewModelScope.launch {
             val result = getJobsUseCase()
             result.onSuccess { jobList ->
-                Log.d("JobViewModel", "✅ Trabajos actualizados en LiveData: ${jobList.size}")
+                Log.d("JobViewModel", " Trabajos actualizados en LiveData: ${jobList.size}")
                 _jobs.value = jobList
             }.onFailure { e ->
-                Log.e("JobViewModel", "🚨 Error actualizando LiveData: ${e.message}")
+                Log.e("JobViewModel", " Error actualizando LiveData: ${e.message}")
                 _jobs.value = emptyList()
             }
         }
     }
 
-    private fun fetchPendingJobs() { // ✅ Función para traer trabajos pendientes
+    private fun fetchPendingJobs() {
         viewModelScope.launch {
             val result = getPendingJobsUseCase()
             result.onSuccess { pendingList ->
@@ -66,7 +66,7 @@ class JobViewModel(
         }
     }
 
-    private fun fetchAcceptedJobs() { // ✅ Función para traer trabajos aceptados
+    private fun fetchAcceptedJobs() {
         viewModelScope.launch {
             val result = getAcceptedJobsUseCase()
             result.onSuccess { acceptedList ->
@@ -77,12 +77,12 @@ class JobViewModel(
         }
     }
 
-    fun applyToJob(jobId: Int, applicantId: Int) { // ✅ Ahora acepta dos parámetros
+    fun applyToJob(jobId: Int, applicantId: Int) {
         viewModelScope.launch {
-            val result = postJobsUseCase(jobId, applicantId) // ✅ Llamamos a la UseCase con ambos valores
+            val result = postJobsUseCase(jobId, applicantId)
             result.onSuccess {
                 _applicationSuccess.value = true
-                fetchPendingJobs() // ✅ Actualizar lista de pendientes tras aplicar
+                fetchPendingJobs()
             }.onFailure {
                 _applicationSuccess.value = false
             }

@@ -26,29 +26,29 @@ class JobRepository(
             val userId = sharedPreferences.getInt("userId", -1)
 
             if (userId == -1) {
-                Log.e("JobRepository", "🚨 No se encontró userId en SharedPreferences")
+                Log.e("JobRepository", " No se encontró userId en SharedPreferences")
                 return Result.failure(Exception("Usuario no autenticado"))
             }
 
-            Log.d("JobRepository", "📡 Obteniendo trabajos para userId: $userId")
+            Log.d("JobRepository", " Obteniendo trabajos para userId: $userId")
 
             val response = jobService.getJobs(userId)
 
             if (response.isSuccessful) {
                 val jobResponse: JobResponse? = response.body()
                 if (jobResponse != null) {
-                    Log.d("JobRepository", "✅ Trabajos obtenidos: ${jobResponse.data.size} para userId: $userId")
+                    Log.d("JobRepository", " Trabajos obtenidos: ${jobResponse.data.size} para userId: $userId")
                     return Result.success(jobResponse.data)
                 } else {
-                    Log.e("JobRepository", "⚠ Respuesta vacía del servidor para userId: $userId")
+                    Log.e("JobRepository", " Respuesta vacía del servidor para userId: $userId")
                     return Result.failure(Exception("Respuesta vacía del servidor"))
                 }
             } else {
-                Log.e("JobRepository", "⚠ Error en la respuesta de la API para userId: $userId - ${response.errorBody()?.string()}")
+                Log.e("JobRepository", " Error en la respuesta de la API para userId: $userId - ${response.errorBody()?.string()}")
                 return Result.failure(Exception("Error en la respuesta de la API"))
             }
         } catch (e: Exception) {
-            Log.e("JobRepository", "🚨 Excepción al obtener trabajos para userId: ${e.message}")
+            Log.e("JobRepository", " Excepción al obtener trabajos para userId: ${e.message}")
             return Result.failure(e)
         }
     }
@@ -59,29 +59,29 @@ class JobRepository(
             val userId = sharedPreferences.getInt("userId", -1)
 
             if (userId == -1) {
-                Log.e("JobRepository", "🚨 No se encontró userId en SharedPreferences")
+                Log.e("JobRepository", " No se encontró userId en SharedPreferences")
                 return Result.failure(Exception("Usuario no autenticado"))
             }
 
-            Log.d("JobRepository", "📡 Obteniendo trabajos pendientes para userId: $userId")
+            Log.d("JobRepository", " Obteniendo trabajos pendientes para userId: $userId")
 
             val response = jobService.getPendingApplications(userId)
 
             if (response.isSuccessful) {
                 val pendingJobsResponse: JobApplicationResponse? = response.body()
                 if (pendingJobsResponse != null) {
-                    Log.d("JobRepository", "✅ Trabajos pendientes obtenidos: ${pendingJobsResponse.data.size}")
+                    Log.d("JobRepository", " Trabajos pendientes obtenidos: ${pendingJobsResponse.data.size}")
                     return Result.success(pendingJobsResponse.data)
                 } else {
-                    Log.e("JobRepository", "⚠ Respuesta vacía del servidor")
+                    Log.e("JobRepository", " Respuesta vacía del servidor")
                     return Result.failure(Exception("Respuesta vacía del servidor"))
                 }
             } else {
-                Log.e("JobRepository", "⚠ Error en la respuesta de la API: ${response.errorBody()?.string()}")
+                Log.e("JobRepository", " Error en la respuesta de la API: ${response.errorBody()?.string()}")
                 return Result.failure(Exception("Error en la respuesta de la API"))
             }
         } catch (e: Exception) {
-            Log.e("JobRepository", "🚨 Excepción al obtener trabajos pendientes: ${e.message}")
+            Log.e("JobRepository", " Excepción al obtener trabajos pendientes: ${e.message}")
             return Result.failure(e)
         }
     }
@@ -92,29 +92,29 @@ class JobRepository(
             val userId = sharedPreferences.getInt("userId", -1)
 
             if (userId == -1) {
-                Log.e("JobRepository", "🚨 No se encontró userId en SharedPreferences")
+                Log.e("JobRepository", " No se encontró userId en SharedPreferences")
                 return Result.failure(Exception("Usuario no autenticado"))
             }
 
-            Log.d("JobRepository", "📡 Obteniendo trabajos aceptados para userId: $userId")
+            Log.d("JobRepository", " Obteniendo trabajos aceptados para userId: $userId")
 
             val response = jobService.getAcceptedApplications(userId)
 
             if (response.isSuccessful) {
                 val acceptedJobsResponse: JobApplicationResponse? = response.body()
                 if (acceptedJobsResponse != null) {
-                    Log.d("JobRepository", "✅ Trabajos aceptados obtenidos: ${acceptedJobsResponse.data.size}")
+                    Log.d("JobRepository", " Trabajos aceptados obtenidos: ${acceptedJobsResponse.data.size}")
                     return Result.success(acceptedJobsResponse.data)
                 } else {
-                    Log.e("JobRepository", "⚠ Respuesta vacía del servidor")
+                    Log.e("JobRepository", " Respuesta vacía del servidor")
                     return Result.failure(Exception("Respuesta vacía del servidor"))
                 }
             } else {
-                Log.e("JobRepository", "⚠ Error en la respuesta de la API: ${response.errorBody()?.string()}")
+                Log.e("JobRepository", " Error en la respuesta de la API: ${response.errorBody()?.string()}")
                 return Result.failure(Exception("Error en la respuesta de la API"))
             }
         } catch (e: Exception) {
-            Log.e("JobRepository", "🚨 Excepción al obtener trabajos aceptados: ${e.message}")
+            Log.e("JobRepository", " Excepción al obtener trabajos aceptados: ${e.message}")
             return Result.failure(e)
         }
     }
@@ -129,14 +129,14 @@ class JobRepository(
                 throw HttpException(response)
             }
 
-            Result.success(true) // ✅ Devuelve `Result<Boolean>` en caso de éxito
+            Result.success(true)
         } catch (e: IOException) {
             Log.e("JobRepository", "⚠ No hay conexión a internet, guardando en Room...")
             savePendingApplication(jobId, applicantId)
-            Result.success(false) // ✅ Indica que la aplicación fue almacenada localmente
+            Result.success(false) //  Indica que la aplicación fue almacenada localmente
         } catch (e: HttpException) {
-            Log.e("JobRepository", "❌ Error en la API: ${e.message()}")
-            Result.failure(e) // ✅ Devuelve un fallo en caso de error de API
+            Log.e("JobRepository", " Error en la API: ${e.message()}")
+            Result.failure(e)
         }
     }
 
@@ -144,7 +144,7 @@ class JobRepository(
     private suspend fun savePendingApplication(jobId: Int, applicantId: Int) {
         val pendingApplication = PendingJobApplicationEntity(jobId = jobId, applicantId = applicantId)
         pendingJobApplicationDao.insertPendingApplication(pendingApplication)
-        Log.d("JobRepository", "📌 Aplicación guardada en Room para sincronización futura.")
+        Log.d("JobRepository", " Aplicación guardada en Room para sincronización futura.")
     }
 
     suspend fun getAllPendingApplications(): List<PendingJobApplicationEntity> {

@@ -56,13 +56,13 @@ class NetworkMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY // 🔹 Mantiene el servicio corriendo incluso si la app se cierra
+        return START_STICKY //  Mantiene el servicio corriendo incluso si la app se cierra
     }
 
     override fun onDestroy() {
         super.onDestroy()
         connectivityManager.unregisterNetworkCallback(networkCallback)
-        Log.d("NetworkMonitorService", "❌ Servicio detenido.")
+        Log.d("NetworkMonitorService", " Servicio detenido.")
     }
 
     override fun onBind(intent: Intent?): IBinder? {

@@ -15,11 +15,11 @@ class SyncJobApplicationWorker(
     private val repository = JobRepository(context, database.pendingJobApplicationDao())
 
     override suspend fun doWork(): Result {
-        Log.d("SyncWorker", "🚀 Iniciando sincronización en segundo plano...")
+        Log.d("SyncWorker", " Iniciando sincronización en segundo plano...")
 
         val pendingApplications = repository.getAllPendingApplications()
         if (pendingApplications.isEmpty()) {
-            Log.d("SyncWorker", "✅ No hay aplicaciones pendientes.")
+            Log.d("SyncWorker", " No hay aplicaciones pendientes.")
             return Result.success()
         }
 
@@ -27,10 +27,10 @@ class SyncJobApplicationWorker(
             try {
                 repository.applyForJob(application.jobId, application.applicantId)
                 database.pendingJobApplicationDao().deletePendingApplication(application.id)
-                Log.d("SyncWorker", "✅ Aplicación sincronizada para jobId: ${application.jobId}")
+                Log.d("SyncWorker", " Aplicación sincronizada para jobId: ${application.jobId}")
             } catch (e: Exception) {
-                Log.e("SyncWorker", "❌ Error al sincronizar jobId: ${application.jobId}, reintentando luego.")
-                return Result.retry() // 🔄 Reintenta si falla
+                Log.e("SyncWorker", " Error al sincronizar jobId: ${application.jobId}, reintentando luego.")
+                return Result.retry() //  Reintenta si falla
             }
         }
         return Result.success()

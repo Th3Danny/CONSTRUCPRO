@@ -9,9 +9,9 @@ class GetJobsUseCase(private val repository: JobRepository) {
     suspend operator fun invoke(): Result<List<Job>> {
         val result = repository.getJobs()
         result.onSuccess { jobs ->
-            Log.d("GetJobsUseCase", "✅ Trabajos obtenidos: ${jobs.size}")
+            Log.d("GetJobsUseCase", " Trabajos obtenidos: ${jobs.size}")
         }.onFailure { e ->
-            Log.e("GetJobsUseCase", "🚨 Error obteniendo trabajos: ${e.message}")
+            Log.e("GetJobsUseCase", " Error obteniendo trabajos: ${e.message}")
         }
         return result
     }

@@ -29,10 +29,10 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
     val acceptedJobs by jobViewModel.acceptedJobs.observeAsState(emptyList())
     var selectedTab by remember { mutableStateOf("Ofertas") }
 
-    // ✅ Obtener contexto una sola vez
+
     val context = LocalContext.current
     val sharedPreferences = remember { context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE) }
-    val applicantId = remember { sharedPreferences.getInt("userId", -1) } // ✅ Guardar en remember para evitar múltiples llamadas
+    val applicantId = remember { sharedPreferences.getInt("userId", -1) }
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color.Black),
@@ -48,7 +48,7 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 Selector de pestañas
+        //  Selector de pestañas
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             TabButton("Ofertas", selectedTab) { selectedTab = "Ofertas" }
             TabButton("Pendientes", selectedTab) { selectedTab = "Pendientes" }
@@ -68,9 +68,9 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
                     items(jobs) { job ->
                         JobItem(job) { jobId ->
                             if (applicantId != -1) {
-                                jobViewModel.applyToJob(jobId, applicantId) // ✅ Ahora pasamos ambos valores
+                                jobViewModel.applyToJob(jobId, applicantId)
                             } else {
-                                Log.e("JobScreen", "🚨 Usuario no autenticado")
+                                Log.e("JobScreen", " Usuario no autenticado")
                             }
                         }
                     }

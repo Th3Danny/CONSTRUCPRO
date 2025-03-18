@@ -101,8 +101,8 @@ fun NavigationWrapper() {
         //  Pantalla de Home (Publicaciones)
         composable("Home") {
             val context = LocalContext.current
-            val database = AppDatabase.getDatabase(context) // ✅ Obtener la instancia de la base de datos
-            val jobRepository = JobRepository(context, database.pendingJobApplicationDao()) // ✅ Pasar el DAO necesario
+            val database = AppDatabase.getDatabase(context) // Obtener la instancia de la base de datos
+            val jobRepository = JobRepository(context, database.pendingJobApplicationDao()) //  Pasar el DAO necesario
 
             val getJobsUseCase = GetJobsUseCase(jobRepository)
             val postJobsUseCase = PostJobsUseCase(jobRepository)
