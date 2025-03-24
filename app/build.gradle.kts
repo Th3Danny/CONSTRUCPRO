@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
 
+    implementation ("com.google.android.material:material:1.9.0")
+
     //rooms
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
