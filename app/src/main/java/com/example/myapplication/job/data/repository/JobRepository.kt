@@ -131,7 +131,7 @@ class JobRepository(
 
             Result.success(true)
         } catch (e: IOException) {
-            Log.e("JobRepository", "⚠ No hay conexión a internet, guardando en Room...")
+            Log.e("JobRepository", " No hay conexión a internet, guardando en Room...")
             savePendingApplication(jobId, applicantId)
             Result.success(false) //  Indica que la aplicación fue almacenada localmente
         } catch (e: HttpException) {

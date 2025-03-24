@@ -16,14 +16,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         setContent {
             MyApplicationTheme {
                 NavigationWrapper()
             }
         }
-
 
         //  Iniciar el servicio en segundo plano para monitorear la conexión
         val serviceIntent = Intent(this, NetworkMonitorService::class.java)

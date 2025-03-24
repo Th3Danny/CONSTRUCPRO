@@ -30,7 +30,7 @@ class SyncJobApplicationWorker(
                 Log.d("SyncWorker", " Aplicación sincronizada para jobId: ${application.jobId}")
             } catch (e: Exception) {
                 Log.e("SyncWorker", " Error al sincronizar jobId: ${application.jobId}, reintentando luego.")
-                return Result.retry() //  Reintenta si falla
+                return Result.retry()
             }
         }
         return Result.success()

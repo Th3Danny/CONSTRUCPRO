@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.net.*
 import android.os.Build
 import android.os.IBinder
@@ -18,7 +17,12 @@ import com.example.myapplication.core.workers.SyncJobApplicationWorker
 
 class NetworkMonitorService : Service() {
 
-    private val CHANNEL_ID = "NetworkMonitorServiceChannel"
+    companion object {
+        private const val CHANNEL_ID = "NetworkMonitorServiceChannel"
+        private const val NOTIFICATION_ID = 1
+        const val ACTION_STOP_SERVICE = "com.example.myapplication.STOP_SERVICE"
+    }
+
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
@@ -27,9 +31,7 @@ class NetworkMonitorService : Service() {
         super.onCreate()
         createNotificationChannel()
 
-            startForeground(1, getNotification("Monitoreando conexión..."), ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
-
-
+        startForeground(NOTIFICATION_ID, getNotification("Monitoreando conexión..."))
 
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -37,15 +39,23 @@ class NetworkMonitorService : Service() {
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onAvailable(network: Network) {
                 if (isInternetAvailable()) {
-                    Log.d("NetworkMonitorService", "📡 Internet detectado, ejecutando sincronización inmediata...")
+                    Log.d("NetworkMonitorService", "Internet detectado, ejecutando sincronización inmediata...")
 
                     val workRequest = OneTimeWorkRequestBuilder<SyncJobApplicationWorker>().build()
                     WorkManager.getInstance(applicationContext).enqueue(workRequest)
+
+                    // Actualizar notificación
+                    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.notify(NOTIFICATION_ID, getNotification("Conectado: Sincronizando recetas..."))
                 }
             }
 
             override fun onLost(network: Network) {
-                Log.d("NetworkMonitorService", "🚨 Se perdió la conexión a Internet.")
+                Log.d("NetworkMonitorService", "Se perdió la conexión a Internet.")
+
+                // Actualizar notificación
+                val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.notify(NOTIFICATION_ID, getNotification("Desconectado: Esperando conexión..."))
             }
         }
 
@@ -56,7 +66,10 @@ class NetworkMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY //  Mantiene el servicio corriendo incluso si la app se cierra
+        if (intent?.action == ACTION_STOP_SERVICE) {
+            stopSelf()
+        }
+        return START_STICKY
     }
 
     override fun onDestroy() {
@@ -82,11 +95,21 @@ class NetworkMonitorService : Service() {
     }
 
     private fun getNotification(content: String): Notification {
+        val stopIntent = Intent(this, NetworkMonitorService::class.java).apply {
+            action = ACTION_STOP_SERVICE
+        }
+        val pendingStopIntent = PendingIntent.getService(
+            this, 0, stopIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        )
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Monitoreo de Red")
+            .setContentTitle("Recetas App - Sincronización")
             .setContentText(content)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .addAction(R.drawable.ic_launcher_foreground, "Detener", pendingStopIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
             .build()
     }
 

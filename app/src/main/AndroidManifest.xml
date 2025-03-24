@@ -28,7 +28,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
 
-        <!-- 🔹 Servicio de Firebase para notificaciones push -->
+        <!--  Servicio de Firebase para notificaciones push -->
         <service
             android:name=".core.notification.PushNotificationService"
             android:exported="false">
@@ -37,23 +37,15 @@
             </intent-filter>
         </service>
 
-        <!-- 🔹 Servicio para monitoreo de red y ejecución en segundo plano -->
+        <!--  Servicio para monitoreo de red y ejecución en segundo plano -->
         <service
             android:name=".core.service.NetworkMonitorService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"> 
         </service>
 
-        <!-- 🔹 Broadcast Receiver para detectar cambios de conectividad -->
-        <receiver
-            android:name=".receiver.ConnectivityReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
 
-        <!-- 🔹 Actividad principal de la aplicación -->
+        <!--  Actividad principal de la aplicación -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
