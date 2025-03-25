@@ -18,10 +18,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.components.loginNavigate.ProfileDropdown
 import com.example.myapplication.core.navigation.BottomNavigationBar
 import com.example.myapplication.job.data.model.JobApplication
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
     val jobs by jobViewModel.jobs.observeAsState(emptyList())
@@ -38,6 +40,13 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
         modifier = Modifier.fillMaxSize().background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TopAppBar(
+            title = { Text("Home") },
+            actions = {
+                ProfileDropdown(navController)
+            }
+        )
+
         Text(
             text = "Ofertas de Trabajo",
             fontSize = 24.sp,

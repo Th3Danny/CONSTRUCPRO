@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,10 +26,10 @@ fun SwitchButtons(
     selectedTab: String,
     onTabSelected: (String) -> Unit
 ) {
-    val activeColor = Color(0xFFFF9800)
-    val inactiveColor = Color.White
-    val activeText = Color.White
-    val inactiveText = Color.Black
+    val activeColor = MaterialTheme.colorScheme.primary
+    val inactiveColor = MaterialTheme.colorScheme.background
+    val activeText = MaterialTheme.colorScheme.onBackground
+    val inactiveText = MaterialTheme.colorScheme.surface
 
     Box(
         modifier = Modifier
@@ -37,11 +38,6 @@ fun SwitchButtons(
         contentAlignment = Alignment.Center
     ) {
         // Fondo redondeado base
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(Color.Black, RoundedCornerShape(50.dp))
-        )
 
         Row(
             modifier = Modifier

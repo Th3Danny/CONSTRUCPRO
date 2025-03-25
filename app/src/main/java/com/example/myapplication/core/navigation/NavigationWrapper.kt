@@ -1,7 +1,13 @@
 package com.example.myapplication.core.navigation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -48,6 +54,7 @@ import com.example.myapplication.register.domain.RegisterUseCase
 import com.example.myapplication.register.data.repository.RegisterRepository
 
 
+
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationWrapper() {
@@ -69,7 +76,13 @@ fun NavigationWrapper() {
     val projectUseCase = GetProjectsUseCase(projectRepository)
     val notificationUseCase = GetNotificationsUseCase(notificationRepository)
 
-    NavHost(navController = navController, startDestination = "Login") {
+    val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+    val startDestination = if (sharedPreferences.getBoolean("isLoggedIn", false)) "Home" else "Login"
+
+    if (startDestination != null) {
+
+
+    NavHost(navController = navController, startDestination = startDestination) {
 
         //  Pantalla de Inicio de Sesión
         composable("Login") {
@@ -159,4 +172,12 @@ fun NavigationWrapper() {
         }
 
     }
+
+    } else {
+        // Mientras se decide a dónde ir, puedes mostrar un loader temporal
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
+
 }

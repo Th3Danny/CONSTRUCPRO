@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.components.loginNavigate.SwitchButtons
 
 
@@ -27,6 +28,7 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
+    val context = LocalContext.current
     val email by loginViewModel.username.observeAsState("")
     val password by loginViewModel.password.observeAsState("")
     val error by loginViewModel.error.observeAsState("")
@@ -34,6 +36,7 @@ fun LoginScreen(
 
     LaunchedEffect(success) {
         if (success) {
+            loginViewModel.saveSession(context)
             onNavigateToHome()
         }
     }
@@ -86,6 +89,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
                 SwitchButtons(selectedTab = "Inicio") { selected ->
                     if (selected == "Registro") {
                         onNavigateToRegister()

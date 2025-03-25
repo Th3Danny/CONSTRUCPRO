@@ -77,7 +77,7 @@ class LoginViewModel(
         }
     }
 
-    // 🔹 Obtener el token FCM y enviarlo al backend
+    //  Obtener el token FCM y enviarlo al backend
     private fun sendFcmTokenToBackend() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -105,6 +105,14 @@ class LoginViewModel(
             apply()
         }
         Log.d("LoginViewModel", " userId guardado en SharedPreferences: $userId")
+    }
+
+    fun saveSession(context: Context) {
+        val sharedPref = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("isLoggedIn", true)
+            apply()
+        }
     }
 
     fun onChangeUsername(username: String) {
