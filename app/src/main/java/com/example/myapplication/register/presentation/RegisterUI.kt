@@ -1,6 +1,7 @@
 package com.example.myapplication.register.presentation
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,8 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.components.loginNavigate.SwitchButtons
 import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
@@ -50,7 +53,8 @@ fun RegisterScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -58,16 +62,16 @@ fun RegisterScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Construc",
+                text = "Civi",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.surface
             )
             Text(
-                text = "Pro",
+                text = "Bridge",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF9800)
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -78,45 +82,27 @@ fun RegisterScreen(
                 .fillMaxWidth(0.9f)
                 .padding(16.dp),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.Black)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { onNavigateToLogin() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
-                        ),
-                        shape = RoundedCornerShape(50)
-                    ) {
-                        Text("Inicio")
-                    }
 
-                    Button(
-                        onClick = { /* Estamos en Registro */ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF9800),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50)
-                    ) {
-                        Text("Registro")
+                SwitchButtons(selectedTab = "Registro") { selected ->
+                    if (selected == "Inicio") {
+                        onNavigateToLogin()
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Nombre de usuario", color = Color.White)
+               // Text("Nombre de usuario", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = username,
                     onValueChange = { registerViewModel.onChangeUsername(it) },
+                    label = { Text("Nombre de usuario") },
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -130,10 +116,11 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Nombre completo", color = Color.White)
+                //Text("Nombre completo", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = name,
                     onValueChange = { registerViewModel.onChangeName(it) },
+                    label = {Text("Nombre completo")},
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -147,10 +134,11 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Correo", color = Color.White)
+                //Text("Correo", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = email,
                     onValueChange = { registerViewModel.onChangeEmail(it) },
+                    label = {Text("Correo")},
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -164,10 +152,11 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Contraseña", color = Color.White)
+                //Text("Contraseña", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = password,
                     onValueChange = { registerViewModel.onChangePassword(it) },
+                    label = {Text("Contraseña")},
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -187,7 +176,7 @@ fun RegisterScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Registrarse", color = Color.White)
+                    Text("Registrarse", color = MaterialTheme.colorScheme.onBackground)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -206,4 +195,3 @@ fun RegisterScreen(
         }
     }
 }
-

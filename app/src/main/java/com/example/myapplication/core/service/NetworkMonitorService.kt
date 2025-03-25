@@ -46,7 +46,7 @@ class NetworkMonitorService : Service() {
 
                     // Actualizar notificación
                     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    notificationManager.notify(NOTIFICATION_ID, getNotification("Conectado: Sincronizando recetas..."))
+                    notificationManager.notify(NOTIFICATION_ID, getNotification("Conectado: Sincronizando de solicitudes..."))
                 }
             }
 

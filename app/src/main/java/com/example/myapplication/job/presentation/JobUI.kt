@@ -35,7 +35,7 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel) {
     val applicantId = remember { sharedPreferences.getInt("userId", -1) }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.Black),
+        modifier = Modifier.fillMaxSize().background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
