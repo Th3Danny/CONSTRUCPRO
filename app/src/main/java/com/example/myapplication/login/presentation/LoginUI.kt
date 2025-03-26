@@ -1,6 +1,8 @@
 package com.example.myapplication.login.presentation
 
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import com.example.myapplication.components.loginNavigate.SwitchButtons
+
 
 @Composable
 fun LoginScreen(
@@ -23,6 +28,7 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
+    val context = LocalContext.current
     val email by loginViewModel.username.observeAsState("")
     val password by loginViewModel.password.observeAsState("")
     val error by loginViewModel.error.observeAsState("")
@@ -30,6 +36,7 @@ fun LoginScreen(
 
     LaunchedEffect(success) {
         if (success) {
+            loginViewModel.saveSession(context)
             onNavigateToHome()
         }
     }
@@ -37,25 +44,36 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
+
     ) {
+
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Construc",
+                text = "Civi",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.surface
             )
             Text(
-                text = "Pro",
+                text = "Bridge",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF9800)
+                color = MaterialTheme.colorScheme.primary
             )
+            // Imagen del logo
+//            Image(
+//                painter = painterResource(id = R.drawable.logo),
+//                contentDescription = "Logo de la app",
+//                modifier = Modifier
+//                    .height(500.dp)
+//                    .padding(bottom = 150.dp)
+//            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -63,72 +81,56 @@ fun LoginScreen(
         Card(
             modifier = Modifier.fillMaxWidth(0.9f),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.Black)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer)
         ) {
+
             Column(
                 modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { /* Mantener en Login */ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF9800),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50)
-                    ) {
-                        Text("Inicio")
-                    }
 
-                    Button(
-                        onClick = { onNavigateToRegister() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50)
-                    ) {
-                        Text("Registro")
+                SwitchButtons(selectedTab = "Inicio") { selected ->
+                    if (selected == "Registro") {
+                        onNavigateToRegister()
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Correo", color = Color.White)
+                //Text("Correo", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = email,
                     onValueChange = { loginViewModel.onChangeUsername(it) },
+                    label = { Text("Correo") },
                     modifier = Modifier.fillMaxWidth(),
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.White,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
                         unfocusedIndicatorColor = Color.Gray,
-                        cursorColor = Color.White
+                        cursorColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Contraseña", color = Color.White)
+                //Text("Contraseña", color = MaterialTheme.colorScheme.onBackground)
                 TextField(
                     value = password,
                     onValueChange = { loginViewModel.onChangePassword(it) },
+                    label = { Text("Contraseña") },
                     modifier = Modifier.fillMaxWidth(),
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.White,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
                         unfocusedIndicatorColor = Color.Gray,
-                        cursorColor = Color.White
+                        cursorColor = MaterialTheme.colorScheme.onBackground
                     ),
                     visualTransformation = PasswordVisualTransformation()
                 )
@@ -138,7 +140,7 @@ fun LoginScreen(
                 Button(
                     onClick = { loginViewModel.onLogin(email, password) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF9800)
+                        containerColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -161,3 +163,5 @@ fun LoginScreen(
         }
     }
 }
+
+

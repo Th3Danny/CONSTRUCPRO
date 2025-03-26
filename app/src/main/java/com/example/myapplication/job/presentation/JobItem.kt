@@ -55,3 +55,4 @@ fun JobItem(job: Job, onApplyClick: (Int) -> Unit) {
     }
 }
 
+

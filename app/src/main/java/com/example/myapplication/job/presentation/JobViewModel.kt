@@ -1,5 +1,6 @@
 package com.example.myapplication.job.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.example.myapplication.job.domain.PostJobsUseCase
 
 
 class JobViewModel(
+    private val context: Context,
     private val getJobsUseCase: GetJobsUseCase,
     private val getPendingJobsUseCase: GetPendingJobsUseCase,
     private val getAcceptedJobsUseCase: GetAcceptedJobsUseCase,
@@ -44,16 +46,16 @@ class JobViewModel(
         viewModelScope.launch {
             val result = getJobsUseCase()
             result.onSuccess { jobList ->
-                Log.d("JobViewModel", "✅ Trabajos actualizados en LiveData: ${jobList.size}")
+                Log.d("JobViewModel", " Trabajos actualizados en LiveData: ${jobList.size}")
                 _jobs.value = jobList
             }.onFailure { e ->
-                Log.e("JobViewModel", "🚨 Error actualizando LiveData: ${e.message}")
+                Log.e("JobViewModel", " Error actualizando LiveData: ${e.message}")
                 _jobs.value = emptyList()
             }
         }
     }
 
-    private fun fetchPendingJobs() { // ✅ Función para traer trabajos pendientes
+    private fun fetchPendingJobs() {
         viewModelScope.launch {
             val result = getPendingJobsUseCase()
             result.onSuccess { pendingList ->
@@ -64,7 +66,7 @@ class JobViewModel(
         }
     }
 
-    private fun fetchAcceptedJobs() { // ✅ Función para traer trabajos aceptados
+    private fun fetchAcceptedJobs() {
         viewModelScope.launch {
             val result = getAcceptedJobsUseCase()
             result.onSuccess { acceptedList ->
@@ -75,16 +77,16 @@ class JobViewModel(
         }
     }
 
-    fun applyToJob(jobId: Int) {
+    fun applyToJob(jobId: Int, applicantId: Int) {
         viewModelScope.launch {
-            val result = postJobsUseCase(jobId)
+            val result = postJobsUseCase(jobId, applicantId)
             result.onSuccess {
                 _applicationSuccess.value = true
-                fetchPendingJobs() // ✅ Actualizar lista de pendientes tras aplicar
+                fetchPendingJobs()
             }.onFailure {
                 _applicationSuccess.value = false
             }
         }
     }
-}
 
+}

@@ -3,6 +3,7 @@ package com.example.myapplication.core.notification
 import android.content.Context
 import android.util.Log
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
 
@@ -26,7 +27,7 @@ object FirebaseHelper {
             put("token", tokenFCM)
         }
 
-        val body = RequestBody.create(MediaType.parse("application/json"), json.toString())
+        val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
 
         val request = Request.Builder()
             .url(url)
@@ -44,8 +45,8 @@ object FirebaseHelper {
                 if (response.isSuccessful) {
                     Log.d("FCM", " Token de FCM enviado con éxito al backend")
                 } else {
-                    Log.e("FCM", " Fallo al enviar token: Código HTTP ${response.code()} - ${response.message()}")
-                    Log.e("FCM", " Respuesta del servidor: ${response.body()?.string()}")
+                    Log.e("FCM", " Fallo al enviar token: Código HTTP ${response.code} - ${response.message}")
+                    Log.e("FCM", " Respuesta del servidor: ${response.body?.string()}")
                 }
             }
         })

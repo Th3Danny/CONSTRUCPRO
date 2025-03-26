@@ -11,6 +11,7 @@ import com.example.myapplication.login.data.model.LoginRequest
 import com.example.myapplication.login.domain.LoginUseCase
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
+import android.widget.Toast
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
@@ -77,7 +78,7 @@ class LoginViewModel(
         }
     }
 
-    // 🔹 Obtener el token FCM y enviarlo al backend
+    //  Obtener el token FCM y enviarlo al backend
     private fun sendFcmTokenToBackend() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -106,6 +107,21 @@ class LoginViewModel(
         }
         Log.d("LoginViewModel", " userId guardado en SharedPreferences: $userId")
     }
+
+    fun saveSession(context: Context) {
+        val sharedPref = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("isLoggedIn", true)
+            apply()
+        }
+    }
+
+    internal fun logout(context: Context) {
+        val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+    }
+
 
     fun onChangeUsername(username: String) {
         _username.value = username
