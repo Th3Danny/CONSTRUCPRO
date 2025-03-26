@@ -5,7 +5,6 @@ import EducationForm
 import ProfessionalProfileForm
 import SkillsForm
 import WorkExperienceForm
-import android.R.attr.padding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +18,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileConfigScreen(navController: NavController ) {
+fun ProfileConfigScreen(navController: NavController) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var currentSection by remember { mutableStateOf("") }
 
@@ -33,14 +32,15 @@ fun ProfileConfigScreen(navController: NavController ) {
             containerColor = MaterialTheme.colorScheme.background
         ) {
             when (currentSection) {
-                "Perfil Profesional" -> ProfessionalProfileForm()
-                "Experiencia Laboral" -> WorkExperienceForm()
-                "Habilidades" -> SkillsForm()
-                "Educación" -> EducationForm()
-                "Certificaciones" -> CertificationsForm()
+                "Perfil Profesional" -> ProfessionalProfileForm(onDismiss = { showBottomSheet = false })
+                "Experiencia Laboral" -> WorkExperienceForm(onDismiss = { showBottomSheet = false })
+                "Habilidades" -> SkillsForm(onDismiss = { showBottomSheet = false })
+                "Educación" -> EducationForm(onDismiss = { showBottomSheet = false })
+                "Certificaciones" -> CertificationsForm(onDismiss = { showBottomSheet = false })
             }
         }
     }
+
 
     // Pantalla principal
     Column(

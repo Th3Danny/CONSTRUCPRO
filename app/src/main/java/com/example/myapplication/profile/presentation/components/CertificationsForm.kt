@@ -1,3 +1,5 @@
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,21 +9,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CertificationsForm() {
+fun CertificationsForm(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+    val profileId = prefs.getInt("userId", -1)
+
+    var name by remember { mutableStateOf("") }
+    var issuingOrg by remember { mutableStateOf("") }
+    var issueDate by remember { mutableStateOf("") }
+    var expirationDate by remember { mutableStateOf("") }
+    var credentialId by remember { mutableStateOf("") }
+    var credentialUrl by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -40,11 +56,63 @@ fun CertificationsForm() {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text("Agrega tus certificaciones")
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre del curso o certificación") }, modifier = Modifier.fillMaxWidth())
+            Text("Agregar Certificación", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {  }) {
-                Text("Guardar")
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre de la certificación") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = issuingOrg,
+                onValueChange = { issuingOrg = it },
+                label = { Text("Organización emisora") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = issueDate,
+                onValueChange = { issueDate = it },
+                label = { Text("Fecha de emisión (YYYY-MM-DD)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = expirationDate,
+                onValueChange = { expirationDate = it },
+                label = { Text("Fecha de expiración (YYYY-MM-DD)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = credentialId,
+                onValueChange = { credentialId = it },
+                label = { Text("ID de la credencial") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = credentialUrl,
+                onValueChange = { credentialUrl = it },
+                label = { Text("URL de la credencial") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                // Aquí iría el POST con todos los datos y profileId
+                Log.d("ProfileForm", "Enviando Certificaciones")
+                onDismiss()
+
+
+            },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
