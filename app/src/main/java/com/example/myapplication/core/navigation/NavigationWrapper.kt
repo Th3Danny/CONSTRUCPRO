@@ -1,5 +1,10 @@
 package com.example.myapplication.core.navigation
 
+import CertificationsForm
+import EducationForm
+import ProfessionalProfileForm
+import SkillsForm
+import WorkExperienceForm
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -50,6 +55,7 @@ import com.example.myapplication.login.data.repository.AuthRepository
 import com.example.myapplication.login.domain.LoginUseCase
 import com.example.myapplication.login.presentation.LoginViewModel
 import com.example.myapplication.login.presentation.LoginViewModelFactory
+import com.example.myapplication.profile.presentation.ProfileConfigScreen
 import com.example.myapplication.register.domain.RegisterUseCase
 import com.example.myapplication.register.data.repository.RegisterRepository
 
@@ -173,7 +179,12 @@ fun NavigationWrapper() {
             )
         }
 
+
+        composable("ProfileConfig") {
+            ProfileConfigScreen(navController = navController)
+        }
     }
+
 
     } else {
         // Mientras se decide a dónde ir, puedes mostrar un loader temporal

@@ -1,5 +1,6 @@
 package com.example.myapplication.job.presentation
 
+import android.Manifest
 import android.R.attr.permission
 import android.content.Context
 import android.content.pm.PackageManager
@@ -31,7 +32,7 @@ import com.example.myapplication.components.loginNavigate.TopAppBarProfile
 import com.example.myapplication.core.navigation.BottomNavigationBar
 import com.example.myapplication.job.data.model.JobApplication
 import com.example.myapplication.login.presentation.LoginViewModel
-
+import com.example.myapplication.profile.presentation.ProfileConfigScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,6 +82,7 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBarProfile(
+            navController = navController,
             username = prefs.getString("username", "Usuario"),
             imageUri = imageUri,
             context = context,
@@ -92,17 +94,22 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
             },
             onImagePick = {
                 val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    android.Manifest.permission.READ_MEDIA_IMAGES
+                    Manifest.permission.READ_MEDIA_IMAGES
                 } else {
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE
                 }
 
-                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     launcherGallery.launch("image/*")
                 } else {
                     permissionLauncher.launch(permission)
                 }
-            }
+            },
+
         )
 
 

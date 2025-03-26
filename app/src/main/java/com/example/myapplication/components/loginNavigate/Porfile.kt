@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.*
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
@@ -31,6 +33,7 @@ import com.example.myapplication.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarProfile(
+    navController: NavController,
     username: String?,
     imageUri: Uri?,
     context: Context,
@@ -83,6 +86,13 @@ fun TopAppBarProfile(
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
+                    IconButton(onClick = { navController.navigate("ProfileConfig") }) {
+                        Icon(
+                            imageVector = Icons.Default.Person, // o tu icono personalizado
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
 
                     // Botón rojo para cerrar sesión
                     Button(
