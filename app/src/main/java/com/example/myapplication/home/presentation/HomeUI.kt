@@ -13,10 +13,11 @@ import androidx.navigation.NavController
 import com.example.myapplication.core.navigation.BottomNavigationBar
 import com.example.myapplication.job.presentation.JobScreen
 import com.example.myapplication.job.presentation.JobViewModel
+import com.example.myapplication.login.presentation.LoginViewModel
 
 
 @Composable
-fun HomeScreen(navController: NavController, jobViewModel: JobViewModel) {
+fun HomeScreen(navController: NavController, jobViewModel: JobViewModel, loginViewModel: LoginViewModel) {
     val jobs by jobViewModel.jobs.observeAsState(emptyList())
     var selectedTab by remember { mutableStateOf("Jobs") }
 
@@ -49,7 +50,7 @@ fun HomeScreen(navController: NavController, jobViewModel: JobViewModel) {
 
         //  Mostrar la sección correspondiente
         when (selectedTab) {
-            "Jobs" -> JobScreen(navController, jobViewModel)
+            "Jobs" -> JobScreen(navController, jobViewModel, loginViewModel )
 
         }
 

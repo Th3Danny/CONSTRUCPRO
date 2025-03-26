@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
 
+    //Almacenamiento
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+
     implementation ("com.google.android.material:material:1.9.0")
 
     //rooms

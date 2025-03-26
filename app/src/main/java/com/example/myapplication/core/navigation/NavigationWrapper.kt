@@ -114,9 +114,9 @@ fun NavigationWrapper() {
         //  Pantalla de Home (Publicaciones)
         composable("Home") {
             val context = LocalContext.current
-            val database = AppDatabase.getDatabase(context) // Obtener la instancia de la base de datos
-            val jobRepository = JobRepository(context, database.pendingJobApplicationDao()) //  Pasar el DAO necesario
+            val database = AppDatabase.getDatabase(context)
 
+            val jobRepository = JobRepository(context, database.pendingJobApplicationDao())
             val getJobsUseCase = GetJobsUseCase(jobRepository)
             val postJobsUseCase = PostJobsUseCase(jobRepository)
             val getPendingJobsUseCase = GetPendingJobsUseCase(jobRepository)
@@ -126,14 +126,16 @@ fun NavigationWrapper() {
                 factory = JobViewModelFactory(context, getJobsUseCase, getPendingJobsUseCase, getAcceptedJobsUseCase, postJobsUseCase)
             )
 
+            val loginViewModel: LoginViewModel = viewModel(
+                factory = LoginViewModelFactory(loginUseCase, context)
+            )
+
             JobScreen(
                 navController = navController,
-                jobViewModel = jobViewModel
+                jobViewModel = jobViewModel,
+                loginViewModel = loginViewModel
             )
         }
-
-
-
 
         //  Pantalla de Chat
         composable("Chat") {
