@@ -1,10 +1,7 @@
 package com.example.myapplication.core.navigation
 
-import CertificationsForm
-import EducationForm
-import ProfessionalProfileForm
-import SkillsForm
-import WorkExperienceForm
+
+
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.Box

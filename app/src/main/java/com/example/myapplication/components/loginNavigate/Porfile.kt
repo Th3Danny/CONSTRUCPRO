@@ -5,13 +5,18 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import androidx.compose.foundation.BorderStroke
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -21,8 +26,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 
@@ -44,74 +53,118 @@ fun TopAppBarProfile(
 
     TopAppBar(
         title = {
-            Text("CiviBridge", color = MaterialTheme.colorScheme.onPrimary)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Civi",
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.surfaceContainer
+                )
+                Text(
+                    text = "Bridge",
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         },
         actions = {
             IconButton(onClick = { expanded = true }) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
+                    imageVector = Icons.Default.Menu,
                     contentDescription = "Menú",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(16.dp)
                         .width(200.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Foto
-                    Image(
-                        painter = rememberAsyncImagePainter(model = imageUri ?: R.drawable.ic_launcher_background),
-                        contentDescription = "Foto de perfil",
+                    // Foto de perfil en un contenedor circular
+                    Surface(
                         modifier = Modifier
                             .size(100.dp)
-                            .clickable {
-                                onImagePick()
-                            }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Nombre
-                    Text(
-                        text = username ?: "Usuario",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    IconButton(onClick = { navController.navigate("ProfileConfig") }) {
-                        Icon(
-                            imageVector = Icons.Default.Person, // o tu icono personalizado
-                            contentDescription = "Perfil",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            .clip(CircleShape)
+                            .clickable { onImagePick() },
+                        shape = CircleShape,
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = imageUri ?: R.drawable.ic_launcher_background
+                            ),
+                            contentDescription = "Foto de perfil",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                     }
 
-                    // Botón rojo para cerrar sesión
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Nombre de usuario
+                    Text(
+                        text = username ?: "Usuario",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botón de perfil
+                    OutlinedButton(
+                        onClick = { navController.navigate("ProfileConfig") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Mi Perfil")
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Botón para cerrar sesión
                     Button(
                         onClick = {
                             expanded = false
                             onLogoutClick()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Cerrar sesión", color = Color.White)
+                        Text(
+                            "Cerrar sesión",
+                            color = MaterialTheme.colorScheme.onError
+                        )
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.background
         )
     )
 }

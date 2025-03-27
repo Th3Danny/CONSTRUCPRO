@@ -1,5 +1,7 @@
 package com.example.myapplication.core.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -8,40 +10,116 @@ import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+
 
 @Composable
 fun BottomNavigationBar(navController: NavController, selectedTab: String, onTabSelected: (String) -> Unit) {
-    NavigationBar(
-        containerColor = Color.Black,
-        modifier = Modifier.fillMaxWidth()
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 8.dp
     ) {
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.AddCircle, contentDescription = "Jobs", modifier = Modifier.size(24.dp)) },
-            label = { Text("Publicaciones", color = Color.White) },
-            selected = selectedTab == "Publicaciones",
-            onClick = { onTabSelected("Publicaciones"); navController.navigate("Home") }
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BottomNavItem(
+                icon = Icons.Filled.AddCircle,
+                label = "Publicaciones",
+                isSelected = selectedTab == "Publicaciones",
+                onClick = {
+                    onTabSelected("Publicaciones")
+                    navController.navigate("Home")
+                }
+            )
+
+            BottomNavItem(
+                icon = Icons.Filled.MailOutline,
+                label = "Chat",
+                isSelected = selectedTab == "Chat",
+                onClick = {
+                    onTabSelected("Chat")
+                    navController.navigate("Chat")
+                }
+            )
+
+            BottomNavItem(
+                icon = Icons.Filled.Info,
+                label = "Proyectos",
+                isSelected = selectedTab == "Proyectos",
+                onClick = {
+                    onTabSelected("Proyectos")
+                    navController.navigate("Projects")
+                }
+            )
+
+            BottomNavItem(
+                icon = Icons.Filled.Notifications,
+                label = "Notificaciones",
+                isSelected = selectedTab == "Notificaciones",
+                onClick = {
+                    onTabSelected("Notificaciones")
+                    navController.navigate("Notifications")
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun BottomNavItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = if (isSelected)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(24.dp)
         )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.MailOutline, contentDescription = "Chat", modifier = Modifier.size(24.dp)) },
-            label = { Text("Chat", color = Color.White) },
-            selected = selectedTab == "Chat",
-            onClick = { onTabSelected("Chat"); navController.navigate("Chat") }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = label,
+            color = if (isSelected)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.onPrimary,
+            fontSize = 12.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            maxLines = 1
         )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Info, contentDescription = "Proyectos", modifier = Modifier.size(24.dp)) },
-            label = { Text("Proyectos", color = Color.White) },
-            selected = selectedTab == "Proyectos",
-            onClick = { onTabSelected("Proyectos"); navController.navigate("Projects") }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones", modifier = Modifier.size(24.dp)) },
-            label = { Text("Notificaciones", color = Color.White) },
-            selected = selectedTab == "Notificaciones",
-            onClick = { onTabSelected("Notificaciones"); navController.navigate("Notifications") }
-        )
+
+        if (isSelected) {
+            Spacer(modifier = Modifier.height(2.dp))
+            Box(
+                modifier = Modifier
+                    .width(30.dp)
+                    .height(3.dp)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+        }
     }
 }

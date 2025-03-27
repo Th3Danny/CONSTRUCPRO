@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
 
+    implementation("androidx.compose.material:material-icons-extended")
+    // O, si solo necesitas los iconos básicos:
+    implementation("androidx.compose.material:material-icons-core")
+
     //Almacenamiento
     implementation("io.coil-kt:coil-compose:2.4.0")
 

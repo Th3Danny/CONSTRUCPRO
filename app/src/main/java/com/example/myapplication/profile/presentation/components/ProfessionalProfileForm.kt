@@ -1,28 +1,24 @@
+
+
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,20 +29,28 @@ fun ProfessionalProfileForm(
     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
     val userId = sharedPreferences.getInt("userId", -1)
 
+    // Variables corregidas para cada campo individual
     var headline by remember { mutableStateOf("") }
     var about by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var contactPhone by remember { mutableStateOf("") }
     var profileImageUrl by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Perfil Profesional") },
-//                navigationIcon = {
-//                    IconButton(onClick = {}) {
-//                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-//                    }
-//                }
+                title = {
+                    Text(
+                        "Perfil Profesional",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         }
     ) { padding ->
@@ -54,24 +58,142 @@ fun ProfessionalProfileForm(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(value = headline, onValueChange = { headline = it }, label = { Text("Titular") })
-            OutlinedTextField(value = about, onValueChange = { about = it }, label = { Text("Acerca de ti") })
-            OutlinedTextField(value = location, onValueChange = { location = it }, label = { Text("Ubicación") })
-            OutlinedTextField(value = contactPhone, onValueChange = { contactPhone = it }, label = { Text("Teléfono") })
-            OutlinedTextField(value = profileImageUrl, onValueChange = { profileImageUrl = it }, label = { Text("URL de la foto") })
+            // Imagen de perfil placeholder
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Foto de perfil",
+                    modifier = Modifier.size(60.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = {
-                Log.d("ProfileForm", "Enviando perfil: userId=$userId, headline=$headline")
-                onDismiss()
-            }) {
-                Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
+            // Campo Titular
+            OutlinedTextField(
+                value = headline,
+                onValueChange = { headline = it },
+                label = { Text("Titular profesional") },
+                placeholder = { Text("Ej: Desarrollador Android Senior") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo Acerca de ti
+            OutlinedTextField(
+                value = about,
+                onValueChange = { about = it },
+                label = { Text("Acerca de ti") },
+                placeholder = { Text("Describe tu experiencia y objetivos profesionales") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo Ubicación
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Ubicación") },
+                placeholder = { Text("Ej: Madrid, España") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Place,
+                        contentDescription = "Ubicación",
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    )
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo Teléfono
+            OutlinedTextField(
+                value = contactPhone,
+                onValueChange = { contactPhone = it },
+                label = { Text("Teléfono de contacto") },
+                placeholder = { Text("Ej: +34 612 345 678") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Phone,
+                        contentDescription = "Teléfono",
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    )
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Campo URL de foto
+            OutlinedTextField(
+                value = profileImageUrl,
+                onValueChange = { profileImageUrl = it },
+                label = { Text("URL de la foto de perfil") },
+                placeholder = { Text("https://...") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón guardar
+            Button(
+                onClick = {
+                    Log.d("ProfileForm", """
+                        Guardando perfil:
+                        userId = $userId
+                        headline = $headline
+                        about = $about
+                        location = $location
+                        contactPhone = $contactPhone
+                        profileImageUrl = $profileImageUrl
+                    """.trimIndent())
+                    onDismiss()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    "Guardar Perfil",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
     }
