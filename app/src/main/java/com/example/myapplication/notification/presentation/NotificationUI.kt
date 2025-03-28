@@ -1,5 +1,7 @@
 package com.example.myapplication.notification.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,78 +18,156 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.notification.data.model.Notification
+import com.example.myapplication.notification.presentation.components.EmptyNotifications
+import com.example.myapplication.notification.presentation.components.NotificationItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationScreen(navController: NavController, notificationViewModel: NotificationViewModel = viewModel()) {
+fun NotificationScreen(
+    navController: NavController,
+    notificationViewModel: NotificationViewModel = viewModel()
+) {
     val notifications by notificationViewModel.notifications.observeAsState(emptyList())
     var selectedTab by remember { mutableStateOf("Notificaciones") }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    // Estado de carga
+    val isLoading by notificationViewModel.isLoading.observeAsState(false)
 
+    // Estado de error
+    val error by notificationViewModel.error.observeAsState("")
+
+    // Efecto para cargar las notificaciones al inicio
+    LaunchedEffect(Unit) {
+        notificationViewModel.loadNotifications()
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Notificaciones",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController, selectedTab) { selectedTab = it }
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Text(
-                text = "Notificaciones",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF9800)
-            )
-        }
+            when {
+                isLoading -> {
+                    // Estado de carga
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
 
-        //  Lista de Notificaciones
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-        ) {
-            items(notifications) { notification ->
-                NotificationItem(notification)
+                error.isNotEmpty() -> {
+                    // Estado de error
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    "Error al cargar notificaciones",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    error,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = { notificationViewModel.loadNotifications() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text("Reintentar")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                notifications.isEmpty() -> {
+                    // Sin notificaciones
+                    EmptyNotifications()
+                }
+
+                else -> {
+                    // Lista de notificaciones
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        items(notifications) { notification ->
+                            NotificationItem(notification) {
+
+
+                                // Marcar como leída la notificación
+                               // notificationViewModel.markAsRead(notification.id)
+
+                                // Navegar según el tipo de notificación
+//                                when (notification.type) {
+//                                    "job_application" -> navController.navigate("JobInfo/${notification.entity_id}")
+//                                    "message" -> navController.navigate("Chat/${notification.entity_id}")
+//                                    "project" -> navController.navigate("Projects/${notification.entity_id}")
+//                                    else -> navController.navigate("Home")
+//                                }
+                                navController.navigate("JobInfo")
+                            }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
             }
         }
-
-
-        BottomNavigationBar(navController, selectedTab) { selectedTab = it }
     }
 }
 
-
-@Composable
-fun NotificationItem(notification: Notification) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Black),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = notification.title,
-                color = Color(0xFFFF9800),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = notification.body,
-                color = Color.White,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Fecha: ${notification.sent_at}",
-                color = Color.Gray,
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-    }
-}
 
 
 

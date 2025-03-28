@@ -46,31 +46,8 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
     val sharedPreferences = remember { context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE) }
     val applicantId = remember { sharedPreferences.getInt("userId", -1) }
 
-    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-    val savedImageUri = prefs.getString("profileImageUri", null)
-    var imageUri by remember { mutableStateOf<Uri?>(savedImageUri?.let { Uri.parse(it) }) }
 
-    val launcherGallery = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            imageUri = it
-            // Guardar en SharedPreferences
-            val editor = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE).edit()
-            editor.putString("profileImageUri", it.toString())
-            editor.apply()
-        }
-    }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            launcherGallery.launch("image/*")
-        } else {
-            Toast.makeText(context, "Permiso denegado para acceder a la galería", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -104,7 +81,6 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
         ) {
             TabButton("Ofertas", selectedTab) { selectedTab = "Ofertas" }
             TabButton("Pendientes", selectedTab) { selectedTab = "Pendientes" }
-            TabButton("Aceptados", selectedTab) { selectedTab = "Aceptados" }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -129,11 +105,6 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
                 }
                 "Pendientes" -> {
                     items(pendingJobs) { jobApplication ->
-                        JobApplicationItem(jobApplication)
-                    }
-                }
-                "Aceptados" -> {
-                    items(acceptedJobs) { jobApplication ->
                         JobApplicationItem(jobApplication)
                     }
                 }
@@ -176,13 +147,11 @@ fun TabButton(text: String, selectedTab: String, onClick: () -> Unit) {
 fun JobApplicationItem(jobApplication: JobApplication) {
     val statusColors = mapOf(
         "Pendiente" to WarningColor,
-        "Aceptado" to SuccessColor,
         "Rechazado" to ErrorColor
     )
 
     val statusBgColors = mapOf(
         "Pendiente" to WarningColor.copy(alpha = 0.1f),
-        "Aceptado" to SuccessColor.copy(alpha = 0.1f),
         "Rechazado" to ErrorColor.copy(alpha = 0.1f)
     )
 
@@ -227,7 +196,7 @@ fun JobApplicationItem(jobApplication: JobApplication) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.DateRange, // Cambia esto si usas un icono personalizado
+                    imageVector = Icons.Default.DateRange,
                     contentDescription = "Fecha",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)

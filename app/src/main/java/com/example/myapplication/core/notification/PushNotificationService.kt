@@ -4,13 +4,16 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.myapplication.MainActivity
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -35,54 +38,54 @@ class PushNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        //  Verificar si la notificación contiene datos
-        remoteMessage.notification?.let {
-            showNotification(it.title ?: "Nueva Notificación", it.body ?: "Mensaje recibido")
+        val destination = remoteMessage.data["navigateTo"]
+        val jobId = remoteMessage.data["jobId"]
+
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().apply {
+            putString("navigateTo", destination)
+            putString("jobIdFromNotification", jobId)
+            apply()
         }
+
+        showNotification(
+            title = remoteMessage.data["title"] ?: "Notificación",
+            message = remoteMessage.data["body"] ?: "Tienes una nueva notificación",
+            navigateTo = destination ?: ""
+        )
     }
 
-    private fun showNotification(title: String, message: String) {
-        val channelId = "firebase_channel"
-        val notificationId = System.currentTimeMillis().toInt()
 
-        // Crear canal de notificación en Android 8+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Notificaciones Firebase",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Canal para recibir notificaciones push de Firebase"
-            }
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+
+    private fun showNotification(title: String, message: String, navigateTo: String) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("navigateTo", navigateTo)
         }
 
-        //  Construcción de la notificación
-        val notification = NotificationCompat.Builder(this, channelId)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(this, "firebase_channel")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
+            .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        val notificationManager = NotificationManagerCompat.from(applicationContext)
-
-        // 🔹 Verificar permisos en Android 13+ (API 33+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ActivityCompat.checkSelfPermission(
-                applicationContext,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         ) {
-            Log.w("FCM", " Permiso de notificaciones no concedido, no se mostrará la notificación.")
-            return
+            NotificationManagerCompat.from(applicationContext).notify(1, notification)
         }
-
-        //  Mostrar la notificación
-        notificationManager.notify(notificationId, notification)
     }
+
+
+
 
     private fun saveFCMToken(token: String) {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)

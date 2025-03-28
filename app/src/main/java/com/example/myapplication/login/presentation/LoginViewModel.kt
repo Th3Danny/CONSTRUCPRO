@@ -37,51 +37,59 @@ class LoginViewModel(
         viewModelScope.launch {
             Log.d("LoginViewModel", "onLogin iniciado con usuario: $email")
 
-            try {
-                val loginRequest = LoginRequest(
-                    email = email,
-                    password = password
-                )
+            // 🔹 Obtener el token de FCM antes de la petición de login
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val fcmToken = task.result
+                    Log.d("LoginViewModel", "FCM token obtenido: $fcmToken")
 
-                val result = loginUseCase(loginRequest)
-                result.onSuccess { loginResponse ->
-                    Log.d("LoginViewModel", " Login exitoso, Token recibido")
-                    Log.d("LoginViewModel", " userId en respuesta: ${loginResponse.data.idUser}")
-                    Log.d("LoginViewModel", " idProfile recibido: ${loginResponse.data.idProfile}")
+                    // 🔹 Continuar con el login
+                    viewModelScope.launch {
+                        try {
+                            val loginRequest = LoginRequest(
+                                email = email,
+                                password = password,
+                                fcm_token = fcmToken
+                            )
 
+                            val result = loginUseCase(loginRequest)
+                            result.onSuccess { loginResponse ->
+                                Log.d("LoginViewModel", "Login exitoso")
+                                _success.value = true
+                                _error.value = ""
+                                _token.value = loginResponse.data.token
 
-                    _success.value = true
-                    _error.value = ""
-                    _token.value = loginResponse.data.token
+                                // Guardar user y profile
+                                saveUserId(loginResponse.data.idUser)
+                                saveProfileId(loginResponse.data.idProfile)
 
-                    //  Guardamos el userId después del login
-                    saveUserId(loginResponse.data.idUser)
+                                val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+                                with(sharedPreferences.edit()) {
+                                    putString("authToken", loginResponse.data.token)
+                                    apply()
+                                }
 
-                    //  Guardamos el idProfile después del login
-                    saveProfileId(loginResponse.data.idProfile)
-
-                    //  Guardar token en SharedPreferences
-                    val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-                    with(sharedPreferences.edit()) {
-                        putString("authToken", loginResponse.data.token)
-                        apply()
+                                sendFcmTokenToBackend()
+                            }.onFailure { exception ->
+                                Log.e("LoginViewModel", "Login fallido: ${exception.message}")
+                                _success.value = false
+                                _error.value = exception.message ?: "Error desconocido"
+                            }
+                        } catch (e: Exception) {
+                            Log.e("LoginViewModel", "Excepción: ${e.message}")
+                            _success.value = false
+                            _error.value = e.message ?: "Error de red"
+                        }
                     }
 
-                    //  Ahora obtenemos el token FCM y lo enviamos al backend
-                    sendFcmTokenToBackend()
+                } else {
+                    Log.e("LoginViewModel", "No se pudo obtener el token FCM")
+                    _error.value = "Error al obtener token FCM"
                 }
-                    .onFailure { exception ->
-                    Log.e("LoginViewModel", " Login fallido: ${exception.message}")
-                    _success.value = false
-                    _error.value = exception.message ?: "Error desconocido"
-                }
-            } catch (e: Exception) {
-                Log.e("LoginViewModel", " Excepción en el login: ${e.message}")
-                _success.value = false
-                _error.value = e.message ?: "Error al intentar realizar la operación"
             }
         }
     }
+
 
     //  Obtener el token FCM y enviarlo al backend
     private fun sendFcmTokenToBackend() {

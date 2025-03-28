@@ -10,6 +10,7 @@ import com.example.myapplication.core.navigation.NavigationWrapper
 import com.example.myapplication.core.service.NetworkMonitorService
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.messaging.FirebaseMessaging
+import androidx.core.content.edit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +29,19 @@ class MainActivity : ComponentActivity() {
 
         //  Configurar Firebase Messaging para recibir notificaciones
         setupFirebaseMessaging()
+
+        val destination = intent.getStringExtra("navigateTo")
+        val jobId = intent.getStringExtra("jobId")
+        val sharedPref = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE).edit().apply {
+            putString("navigateTo", destination)
+            putString("jobIdFromNotification", jobId)
+            apply()
+        }
+
+
     }
+
 
 
     private fun setupFirebaseMessaging() {
@@ -51,5 +64,6 @@ class MainActivity : ComponentActivity() {
             apply()
         }
     }
+
 
 }

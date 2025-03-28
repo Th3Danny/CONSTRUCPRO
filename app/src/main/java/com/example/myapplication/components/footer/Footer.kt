@@ -45,10 +45,10 @@ fun BottomNavigationBar(navController: NavController, selectedTab: String, onTab
 
             BottomNavItem(
                 icon = Icons.Filled.Person,
-                label = "Chat",
-                isSelected = selectedTab == "Chat",
+                label = "Perfil",
+                isSelected = selectedTab == "Perfil",
                 onClick = {
-                    onTabSelected("Chat")
+                    onTabSelected("Perfil")
                     navController.navigate("ProfileScreen")
 
                 }

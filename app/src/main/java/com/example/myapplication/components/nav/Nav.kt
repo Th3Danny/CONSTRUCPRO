@@ -14,56 +14,53 @@ import com.example.myapplication.components.loginNavigate.TopAppBarProfile
 import com.example.myapplication.login.presentation.LoginViewModel
 
 
-    @Composable
-    fun TopAppBarProfileComponent(
-        navController: NavController,
-        loginViewModel: LoginViewModel
-    ) {
-        val context = LocalContext.current
-        val prefs = context.getSharedPreferences("MyAppPrefs", android.content.Context.MODE_PRIVATE)
-        val username = prefs.getString("username", "Usuario")
-        var imageUri by remember { mutableStateOf<Uri?>(null) }
+@Composable
+fun TopAppBarProfileComponent(
+    navController: NavController,
+    loginViewModel: LoginViewModel
+) {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("MyAppPrefs", android.content.Context.MODE_PRIVATE)
+    val username = prefs.getString("username", "Usuario")
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-        val launcherGallery =
-            rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                imageUri = uri
+    // Launcher para seleccionar imagen desde galería
+    val launcherGallery =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            imageUri = uri
+        }
+
+    // Launcher para pedir permiso
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                launcherGallery.launch("image/*") // Abrimos la galería
+            }
+        }
+
+    TopAppBarProfile(
+        navController = navController,
+        username = username,
+        imageUri = imageUri,
+        context = context,
+        onLogoutClick = {
+            loginViewModel.logout(context)
+            navController.navigate("Login") {
+                popUpTo("Home") { inclusive = true }
+            }
+        },
+        onImagePick = {
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
             }
 
-        val permissionLauncher =
-            rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    launcherGallery.launch("image/*")
-                }
-            }
-
-        TopAppBarProfile(
-            navController = navController,
-            username = username,
-            imageUri = imageUri,
-            context = context,
-            onLogoutClick = {
-                loginViewModel.logout(context)
-                navController.navigate("Login") {
-                    popUpTo("Home") { inclusive = true }
-                }
-            },
-            onImagePick = {
-                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Manifest.permission.READ_MEDIA_IMAGES
-                } else {
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                }
-
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    launcherGallery.launch("image/*")
-                } else {
-                    permissionLauncher.launch(permission)
-                }
-            }
-        )
-
-    }
+            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+            launcherGallery.launch("image/*") // ✅ Esto abre la galería
+        } else {
+            permissionLauncher.launch(permission)
+        }
+        }
+    )
+}

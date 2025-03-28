@@ -128,6 +128,7 @@ class JobRepository(
             if (!response.isSuccessful) {
                 throw HttpException(response)
             }
+            Log.d("JobRepository", "Enviando solicitud de aplicación: jobId=$jobId, applicantId=$applicantId")
 
             Result.success(true)
         } catch (e: IOException) {
