@@ -5,40 +5,47 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.profile.data.model.SkillsRequest
+import com.example.myapplication.profile.data.model.WorkExperienceRequest
+import com.example.myapplication.profile.presentation.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SkillsForm(onDismiss: () -> Unit) {
+fun SkillsForm(
+    viewModel: ProfileViewModel,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-    val profileId = prefs.getInt("userId", -1)
+    val profileId = remember {
+        val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        prefs.getInt("idProfile", -1)
+    }
 
     var skillName by remember { mutableStateOf("") }
     var proficiency by remember { mutableStateOf("3") } // Del 1 al 5
     var proficiencyLevel by remember { mutableStateOf(3) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Habilidades",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        "Habilidades",
+//                        style = MaterialTheme.typography.titleMedium.copy(
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -102,6 +109,12 @@ fun SkillsForm(onDismiss: () -> Unit) {
 
             Button(
                 onClick = {
+                    val skills = SkillsRequest(
+                        profile_id = profileId,
+                        name = skillName,
+                        proficiency = proficiencyLevel
+                    )
+                    viewModel.submitSkills(skills)
                     Log.d("ProfileForm", "Guardando habilidad: $skillName, nivel: $proficiency")
                     onDismiss()
                 },

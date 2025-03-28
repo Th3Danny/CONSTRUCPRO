@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,13 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.profile.data.model.EducationRequest
+import com.example.myapplication.profile.data.model.WorkExperienceRequest
+import com.example.myapplication.profile.presentation.ProfileViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EducationForm(onDismiss: () -> Unit) {
+fun EducationForm(viewModel: ProfileViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-    val profileId = prefs.getInt("userId", -1)
+    val profileId = remember {
+        val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        prefs.getInt("idProfile", -1)
+    }
 
     var institution by remember { mutableStateOf("") }
     var degree by remember { mutableStateOf("") }
@@ -27,23 +37,24 @@ fun EducationForm(onDismiss: () -> Unit) {
     var endDate by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var inProgress by remember { mutableStateOf(false) }
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Educación",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        "Educación",
+//                        style = MaterialTheme.typography.titleMedium.copy(
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
         }
     ) { padding ->
         Column(
@@ -174,9 +185,35 @@ fun EducationForm(onDismiss: () -> Unit) {
 
             Button(
                 onClick = {
-                    Log.d("ProfileForm", "Guardando educación: $degree en $institution")
-                    onDismiss()
-                },
+                    if (startDate.isNotBlank()) {
+                        try {
+                            val parsedStartDate = LocalDate.parse(startDate, formatter)
+                            val parsedEndDate = if (!inProgress && endDate.isNotBlank()) {
+                                LocalDate.parse(endDate, formatter)
+                            } else null
+
+                            val education = EducationRequest(
+                                profile_id = profileId,
+                                institution = institution,
+                                degree = degree,
+                                field_of_study = fieldOfStudy,
+                                start_date = parsedStartDate,
+                                end_date = parsedEndDate,
+                                description = description
+                            )
+
+                            viewModel.submitEducation(education)
+                            Log.d("ProfileForm", "Guardando educación: $degree en $institution")
+                            onDismiss()
+                        } catch (e: DateTimeParseException) {
+                            Toast.makeText(context, "Formato de fecha inválido. Usa yyyy-MM-dd", Toast.LENGTH_LONG).show()
+                            Log.e("EducationForm", "Error al parsear fecha: ${e.message}")
+                        }
+                    } else {
+                        Toast.makeText(context, "La fecha de inicio es obligatoria", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                ,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

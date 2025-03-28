@@ -14,10 +14,10 @@ class NotificationRepository(private val context: Context) {
             val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
             val userId = sharedPreferences.getInt("userId", -1)
 
-            // 🔹 Log para verificar el userId guardado
+            //  Log para verificar el userId guardado
             Log.d("NotificationRepository", " Recuperando userId desde SharedPreferences: $userId")
 
-            // 🔹 Verificar que userId sea válido
+            //  Verificar que userId sea válido
             if (userId == -1) {
                 Log.e("NotificationRepository", " No se encontró userId en SharedPreferences")
                 return Result.failure(Exception("Usuario no autenticado"))

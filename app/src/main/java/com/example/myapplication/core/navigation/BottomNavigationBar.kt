@@ -24,7 +24,7 @@ fun BottomNavigationBar(navController: NavController, selectedTab: String, onTab
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.background,
         tonalElevation = 8.dp
     ) {
         Row(
@@ -95,7 +95,7 @@ fun BottomNavItem(
             tint = if (isSelected)
                 MaterialTheme.colorScheme.primary
             else
-                MaterialTheme.colorScheme.onPrimary,
+                MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(24.dp)
         )
 
@@ -106,7 +106,7 @@ fun BottomNavItem(
             color = if (isSelected)
                 MaterialTheme.colorScheme.primary
             else
-                MaterialTheme.colorScheme.onPrimary,
+                MaterialTheme.colorScheme.onBackground,
             fontSize = 12.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             maxLines = 1

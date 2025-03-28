@@ -1,7 +1,5 @@
 package com.example.myapplication.profile.presentation
 
-
-
 import CertificationsForm
 import EducationForm
 import ProfessionalProfileForm
@@ -20,32 +18,80 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileConfigScreen(navController: NavController) {
+fun ProfileConfigScreen(navController: NavController, viewModel: ProfileViewModel) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var currentSection by remember { mutableStateOf("") }
 
-    // BottomSheetState + ModalBottomSheet
-    val sheetState = rememberModalBottomSheetState()
+    // BottomSheetState con skipPartiallyExpanded para evitar estados intermedios
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.background,
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            dragHandle = {
+                // Drag handle personalizado más visible
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        Modifier
+                            .width(40.dp)
+                            .height(4.dp)
+                            .background(
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                RoundedCornerShape(2.dp)
+                            )
+                    )
+                }
+            },
+            // Fijamos una altura máxima para que no ocupe toda la pantalla
+            windowInsets = WindowInsets(0, 0, 0, 0)
         ) {
-            when (currentSection) {
-                "Perfil Profesional" -> ProfessionalProfileForm(onDismiss = { showBottomSheet = false })
-                "Experiencia Laboral" -> WorkExperienceForm(onDismiss = { showBottomSheet = false })
-                "Habilidades" -> SkillsForm(onDismiss = { showBottomSheet = false })
-                "Educación" -> EducationForm(onDismiss = { showBottomSheet = false })
-                "Certificaciones" -> CertificationsForm(onDismiss = { showBottomSheet = false })
+            // Encabezado fijo para el formulario
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+                tonalElevation = 4.dp
+            ) {
+                Text(
+                    text = currentSection,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.padding(16.dp),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Contenido del formulario
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 450.dp) // Altura mínima para que no quede muy pequeño
+                    .padding(bottom = 16.dp) // Padding inferior para evitar que el teclado lo tape todo
+            ) {
+                // Aquí va el contenido del formulario
+                when (currentSection) {
+                    "Perfil Profesional" -> ProfessionalProfileForm(viewModel, onDismiss = { showBottomSheet = false })
+                    "Experiencia Laboral" -> WorkExperienceForm(viewModel, onDismiss = { showBottomSheet = false })
+                    "Habilidades" -> SkillsForm(viewModel, onDismiss = { showBottomSheet = false })
+                    "Educación" -> EducationForm(viewModel, onDismiss = { showBottomSheet = false })
+                    "Certificaciones" -> CertificationsForm(viewModel, onDismiss = { showBottomSheet = false })
+                }
             }
         }
     }
@@ -78,7 +124,6 @@ fun ProfileConfigScreen(navController: NavController) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             ProfileSectionCard("Perfil Profesional", "Añade tu titular e información general") {
                 currentSection = "Perfil Profesional"
                 showBottomSheet = true

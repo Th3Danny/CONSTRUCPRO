@@ -19,11 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.profile.data.model.ProfessionalProfileRequest
+import com.example.myapplication.profile.presentation.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfessionalProfileForm(
-    onDismiss: () -> Unit // para ocultar el modal
+    viewModel: ProfileViewModel,
+    onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
@@ -35,24 +39,37 @@ fun ProfessionalProfileForm(
     var location by remember { mutableStateOf("") }
     var contactPhone by remember { mutableStateOf("") }
     var profileImageUrl by remember { mutableStateOf("") }
+    val isSaved by viewModel.isProfileSaved
+
+    LaunchedEffect(isSaved) {
+        if (isSaved) {
+            onDismiss()
+            viewModel.isProfileSaved.value = false
+        }
+    }
+//    // Usamos LaunchedEffect para cargar datos si existen
+//    LaunchedEffect(Unit) {
+//        viewModel.getProfileData()?.let { profile ->
+//            headline = profile.headline ?: ""
+//            about = profile.about ?: ""
+//            location = profile.location ?: ""
+//            contactPhone = profile.contactPhone ?: ""
+//            profileImageUrl = profile.profileImageUrl ?: ""
+//        }
+//    }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Perfil Profesional",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -173,17 +190,17 @@ fun ProfessionalProfileForm(
             // Botón guardar
             Button(
                 onClick = {
-                    Log.d("ProfileForm", """
-                        Guardando perfil:
-                        userId = $userId
-                        headline = $headline
-                        about = $about
-                        location = $location
-                        contactPhone = $contactPhone
-                        profileImageUrl = $profileImageUrl
-                    """.trimIndent())
-                    onDismiss()
-                },
+                    val profile = ProfessionalProfileRequest(
+                        user_id = userId,
+                        headline = headline,
+                        about = about,
+                        location = location,
+                        contact_phone = contactPhone,
+                        profile_imageUrl = profileImageUrl
+                    )
+                    viewModel.submitProfessionalProfile(profile)
+                }
+                ,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

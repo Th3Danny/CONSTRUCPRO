@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -17,13 +18,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.profile.data.model.CertificationRequest
+import com.example.myapplication.profile.data.model.EducationRequest
+import com.example.myapplication.profile.presentation.ProfileViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CertificationsForm(onDismiss: () -> Unit) {
+fun CertificationsForm(viewModel: ProfileViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-    val profileId = prefs.getInt("userId", -1)
+    val profileId = remember {
+        val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        prefs.getInt("idProfile", -1)
+    }
+
 
     var name by remember { mutableStateOf("") }
     var issuingOrg by remember { mutableStateOf("") }
@@ -33,23 +43,25 @@ fun CertificationsForm(onDismiss: () -> Unit) {
     var credentialUrl by remember { mutableStateOf("") }
     var noExpiration by remember { mutableStateOf(false) }
 
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Certificaciones",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        "Certificaciones",
+//                        style = MaterialTheme.typography.titleMedium.copy(
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -202,9 +214,35 @@ fun CertificationsForm(onDismiss: () -> Unit) {
 
             Button(
                 onClick = {
-                    Log.d("ProfileForm", "Guardando certificación: $name")
-                    onDismiss()
-                },
+                    if (issueDate.isNotBlank()) {
+                        try {
+                            val parsedIssueDate = LocalDate.parse(issueDate, formatter)
+                            val parsedExpirationDate = if (!noExpiration && expirationDate.isNotBlank()) {
+                                LocalDate.parse(expirationDate, formatter)
+                            } else null
+
+                            val certification = CertificationRequest(
+                                profile_id = profileId,
+                                name = name,
+                                issuing_organization = issuingOrg,
+                                issue_date = parsedIssueDate,
+                                expiration_date = parsedExpirationDate,
+                                credential_id = credentialId,
+                                credential_url = credentialUrl
+                            )
+
+                            viewModel.submitCertification(certification)
+                            Log.d("ProfileForm", "Guardando certificación: $name")
+                            onDismiss()
+                        } catch (e: DateTimeParseException) {
+                            Toast.makeText(context, "Formato de fecha inválido. Usa yyyy-MM-dd", Toast.LENGTH_LONG).show()
+                            Log.e("CertificationsForm", "Error al parsear fecha: ${e.message}")
+                        }
+                    } else {
+                        Toast.makeText(context, "La fecha de emisión es obligatoria", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                ,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

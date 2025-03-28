@@ -47,6 +47,8 @@ class LoginViewModel(
                 result.onSuccess { loginResponse ->
                     Log.d("LoginViewModel", " Login exitoso, Token recibido")
                     Log.d("LoginViewModel", " userId en respuesta: ${loginResponse.data.idUser}")
+                    Log.d("LoginViewModel", " idProfile recibido: ${loginResponse.data.idProfile}")
+
 
                     _success.value = true
                     _error.value = ""
@@ -54,6 +56,9 @@ class LoginViewModel(
 
                     //  Guardamos el userId después del login
                     saveUserId(loginResponse.data.idUser)
+
+                    //  Guardamos el idProfile después del login
+                    saveProfileId(loginResponse.data.idProfile)
 
                     //  Guardar token en SharedPreferences
                     val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
@@ -106,6 +111,15 @@ class LoginViewModel(
             apply()
         }
         Log.d("LoginViewModel", " userId guardado en SharedPreferences: $userId")
+    }
+
+    private fun saveProfileId(idProfile: Int) {
+        val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putInt("idProfile", idProfile)
+            apply()
+        }
+        Log.d("LoginViewModel", " idProfile guardado en SharedPreferences: $idProfile")
     }
 
     fun saveSession(context: Context) {

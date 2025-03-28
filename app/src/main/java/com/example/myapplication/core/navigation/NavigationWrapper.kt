@@ -1,7 +1,5 @@
 package com.example.myapplication.core.navigation
 
-
-
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -52,7 +50,11 @@ import com.example.myapplication.login.data.repository.AuthRepository
 import com.example.myapplication.login.domain.LoginUseCase
 import com.example.myapplication.login.presentation.LoginViewModel
 import com.example.myapplication.login.presentation.LoginViewModelFactory
+import com.example.myapplication.profile.data.repository.ProfileRepository
+import com.example.myapplication.profile.domain.ProfileUseCase
 import com.example.myapplication.profile.presentation.ProfileConfigScreen
+import com.example.myapplication.profile.presentation.ProfileViewModel
+import com.example.myapplication.profile.presentation.ProfileViewModelFactory
 import com.example.myapplication.register.domain.RegisterUseCase
 import com.example.myapplication.register.data.repository.RegisterRepository
 
@@ -178,7 +180,13 @@ fun NavigationWrapper() {
 
 
         composable("ProfileConfig") {
-            ProfileConfigScreen(navController = navController)
+            val profileViewModel: ProfileViewModel = viewModel(
+                factory = ProfileViewModelFactory(ProfileUseCase(ProfileRepository()))
+            )
+            ProfileConfigScreen(
+                navController = navController,
+                viewModel = profileViewModel
+            )
         }
     }
 

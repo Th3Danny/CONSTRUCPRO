@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,13 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.profile.data.model.WorkExperienceRequest
+import com.example.myapplication.profile.presentation.ProfileViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorkExperienceForm(onDismiss: () -> Unit) {
+fun WorkExperienceForm(
+    viewModel: ProfileViewModel,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-    val profileId = prefs.getInt("userId", -1)
+    val profileId = remember {
+        val prefs = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        prefs.getInt("idProfile", -1)
+    }
+
 
     var title by remember { mutableStateOf("") }
     var company by remember { mutableStateOf("") }
@@ -30,22 +42,22 @@ fun WorkExperienceForm(onDismiss: () -> Unit) {
     var isCurrent by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Experiencia Laboral",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        "Experiencia Laboral",
+//                        style = MaterialTheme.typography.titleMedium.copy(
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -173,22 +185,50 @@ fun WorkExperienceForm(onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
             Button(
                 onClick = {
-                    Log.d("ProfileForm", "Guardando experiencia: $title en $company")
-                    onDismiss()
+                    if (startDate.isNotBlank()) {
+                        try {
+                            val parsedStartDate = LocalDate.parse(startDate, formatter)
+                            val parsedEndDate = if (!isCurrent && endDate.isNotBlank()) {
+                                LocalDate.parse(endDate, formatter)
+                            } else null
+
+                            val workExperience = WorkExperienceRequest(
+                                profile_id = profileId,
+                                title = title,
+                                company = company,
+                                location = location,
+                                description = description,
+                                is_current = isCurrent,
+                                start_date = parsedStartDate,
+                                end_date = if (isCurrent) null else LocalDate.parse(endDate)
+
+                            )
+
+                            viewModel.submitWorkExperience(workExperience)
+                            Log.d("ProfileForm", "Guardando experiencia: $title en $company")
+                            onDismiss()
+
+                        } catch (e: DateTimeParseException) {
+                            Toast.makeText(context, "Formato de fecha inválido. Usa yyyy-MM-dd", Toast.LENGTH_LONG).show()
+                            Log.e("WorkExperienceForm", " Error al parsear fecha: ${e.message}")
+                        }
+                    } else {
+                        Toast.makeText(context, "La fecha de inicio es obligatoria", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(
-                    "Guardar Experiencia",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+                Text("Guardar Experiencia", color = MaterialTheme.colorScheme.onPrimary)
             }
+
+
         }
     }
 }

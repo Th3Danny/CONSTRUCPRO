@@ -9,5 +9,6 @@ data class LoginResponse(
 data class LoginData(
     @SerializedName("id_user") val idUser: Int,
     @SerializedName("access_token") val token: String,
-    @SerializedName("fcm") val fcmToken: String
+    @SerializedName("fcm") val fcmToken: String,
+    @SerializedName("profile_id") val idProfile: Int
 )
