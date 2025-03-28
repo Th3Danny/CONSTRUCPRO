@@ -1,4 +1,4 @@
-package com.example.myapplication.core.navigation
+package com.example.myapplication.components.footer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,12 +44,13 @@ fun BottomNavigationBar(navController: NavController, selectedTab: String, onTab
             )
 
             BottomNavItem(
-                icon = Icons.Filled.MailOutline,
+                icon = Icons.Filled.Person,
                 label = "Chat",
                 isSelected = selectedTab == "Chat",
                 onClick = {
                     onTabSelected("Chat")
-                    navController.navigate("Chat")
+                    navController.navigate("ProfileScreen")
+
                 }
             )
 
@@ -77,7 +79,7 @@ fun BottomNavigationBar(navController: NavController, selectedTab: String, onTab
 
 @Composable
 fun BottomNavItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit

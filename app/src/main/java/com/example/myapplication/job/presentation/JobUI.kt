@@ -1,11 +1,7 @@
 package com.example.myapplication.job.presentation
 
-import android.Manifest
-import android.R.attr.permission
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,13 +24,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.myapplication.components.loginNavigate.TopAppBarProfile
-import com.example.myapplication.core.navigation.BottomNavigationBar
+import com.example.myapplication.components.nav.TopAppBarProfileComponent
+import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.job.data.model.JobApplication
 import com.example.myapplication.login.presentation.LoginViewModel
-import com.example.myapplication.profile.presentation.ProfileConfigScreen
 import com.example.myapplication.ui.theme.ErrorColor
 import com.example.myapplication.ui.theme.SuccessColor
 import com.example.myapplication.ui.theme.WarningColor
@@ -84,35 +78,12 @@ fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginVie
             .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopAppBarProfile(
-            navController = navController,
-            username = prefs.getString("username", "Usuario"),
-            imageUri = imageUri,
-            context = context,
-            onLogoutClick = {
-                loginViewModel.logout(context)
-                navController.navigate("Login") {
-                    popUpTo("Home") { inclusive = true }
-                }
-            },
-            onImagePick = {
-                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Manifest.permission.READ_MEDIA_IMAGES
-                } else {
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                }
 
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    launcherGallery.launch("image/*")
-                } else {
-                    permissionLauncher.launch(permission)
-                }
-            },
+        TopAppBarProfileComponent(
+            navController = navController,
+            loginViewModel = loginViewModel
         )
+
 
         Text(
             text = "Ofertas de Trabajo",

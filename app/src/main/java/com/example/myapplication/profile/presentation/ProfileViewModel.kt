@@ -6,14 +6,43 @@ import androidx.lifecycle.ViewModel
 import com.example.myapplication.profile.data.model.ProfessionalProfileRequest
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.profile.data.model.CertificationRequest
+import com.example.myapplication.profile.data.model.CompleteProfileResponse
 import com.example.myapplication.profile.data.model.EducationRequest
 import com.example.myapplication.profile.data.model.SkillsRequest
 import com.example.myapplication.profile.data.model.WorkExperienceRequest
 import com.example.myapplication.profile.domain.ProfileUseCase
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.State
+import com.example.myapplication.profile.presentation.components.ProfileUIState
 
 class ProfileViewModel(private val useCase: ProfileUseCase) : ViewModel() {
+    private val _profileState = mutableStateOf(ProfileUIState())
+    val profileState: State<ProfileUIState> = _profileState
+
+    private val _completeProfile = mutableStateOf<CompleteProfileResponse?>(null)
+    val completeProfile: State<CompleteProfileResponse?> = _completeProfile
+
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
+
     val isProfileSaved = mutableStateOf(false)
+
+    fun getCompleteProfile(userId: Int) {
+        viewModelScope.launch {
+            _profileState.value = ProfileUIState(isLoading = true)
+            try {
+                val response = useCase.getCompleteProfile(userId)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    _profileState.value = ProfileUIState(data = response.body()!!.data)
+                } else {
+                    _profileState.value = ProfileUIState(error = "Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _profileState.value = ProfileUIState(error = "Excepción: ${e.localizedMessage}")
+            }
+        }
+    }
+
     fun submitProfessionalProfile(profile: ProfessionalProfileRequest) {
         viewModelScope.launch {
 

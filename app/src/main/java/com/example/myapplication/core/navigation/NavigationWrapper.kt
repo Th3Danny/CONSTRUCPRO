@@ -47,12 +47,14 @@ import com.example.myapplication.register.presentation.RegisterScreen
 import com.example.myapplication.register.presentation.RegisterViewModel
 import com.example.myapplication.register.presentation.RegisterViewModelFactory
 import com.example.myapplication.login.data.repository.AuthRepository
+import com.example.myapplication.login.data.repository.LoginRepository
 import com.example.myapplication.login.domain.LoginUseCase
 import com.example.myapplication.login.presentation.LoginViewModel
 import com.example.myapplication.login.presentation.LoginViewModelFactory
 import com.example.myapplication.profile.data.repository.ProfileRepository
 import com.example.myapplication.profile.domain.ProfileUseCase
 import com.example.myapplication.profile.presentation.ProfileConfigScreen
+import com.example.myapplication.profile.presentation.ProfileScreen
 import com.example.myapplication.profile.presentation.ProfileViewModel
 import com.example.myapplication.profile.presentation.ProfileViewModelFactory
 import com.example.myapplication.register.domain.RegisterUseCase
@@ -66,7 +68,7 @@ fun NavigationWrapper() {
     val navController = rememberNavController()
 
     //  Crear instancias de los repositorios
-    val loginRepository = AuthRepository()
+    val loginRepository = AuthRepository
     val registerRepository = RegisterRepository(registerService)
     val chatRepository = ChatRepository()
     val projectRepository = ProjectRepository()
@@ -188,6 +190,24 @@ fun NavigationWrapper() {
                 viewModel = profileViewModel
             )
         }
+
+        composable("ProfileScreen") {
+            val context = LocalContext.current
+            val profileFactory = ProfileViewModelFactory(ProfileUseCase(ProfileRepository()))
+
+            val loginFactory = LoginViewModelFactory(LoginUseCase(loginRepository), context)
+
+            val profileViewModel: ProfileViewModel = viewModel(factory = profileFactory)
+            val loginViewModel: LoginViewModel = viewModel(factory = loginFactory)
+
+            ProfileScreen(
+                viewModel = profileViewModel,
+                navController = navController,
+                loginViewModel = loginViewModel
+            )
+        }
+
+
     }
 
 

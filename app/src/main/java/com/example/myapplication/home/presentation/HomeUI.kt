@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 import androidx.navigation.NavController
-import com.example.myapplication.core.navigation.BottomNavigationBar
+import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.job.presentation.JobScreen
 import com.example.myapplication.job.presentation.JobViewModel
 import com.example.myapplication.login.presentation.LoginViewModel

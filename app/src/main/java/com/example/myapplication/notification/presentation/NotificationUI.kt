@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.navigation.BottomNavigationBar
+import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.notification.data.model.Notification
 
 @Composable

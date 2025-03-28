@@ -1,5 +1,24 @@
 package com.example.myapplication.profile.data.model
 
+
+
+//Get-------------------------------------------------------------------------->
+data class CompleteProfileResponse(
+    val data: CompleteProfileData,
+    val message: String,
+    val success: Boolean,
+    val http_status: String
+)
+
+data class CompleteProfileData(
+    val profile: ProfessionalProfileData,
+    val experiences: List<WorkExperienceData>,
+    val educations: List<EducationData>,
+    val skills: List<SkillsData>,
+    val certifications: List<CertificationData>
+)
+
+//Post---------------------------------------------------------------->
 data class ProfileResponse(
     val success: Boolean,
     val message: String,
@@ -9,6 +28,9 @@ data class ProfileResponse(
 data class ProfessionalProfileData(
     val id: Int,
     val user_id: Int,
+    val username: String,
+    val name: String,
+    val email: String,
     val headline: String,
     val about: String,
     val location: String,

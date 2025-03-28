@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.myapplication.core.network.RetrofitHelper.profileService
 import com.example.myapplication.profile.data.model.CertificationRequest
 import com.example.myapplication.profile.data.model.CertificationResponse
+import com.example.myapplication.profile.data.model.CompleteProfileResponse
 import com.example.myapplication.profile.data.model.EducationRequest
 import com.example.myapplication.profile.data.model.EducationResponse
 import com.example.myapplication.profile.data.model.ProfessionalProfileRequest
@@ -15,6 +16,10 @@ import com.example.myapplication.profile.data.model.WorkExperienceResponse
 import retrofit2.Response
 
 class ProfileRepository {
+
+    suspend fun getCompleteProfile(userId: Int): Response<CompleteProfileResponse> {
+            return profileService.getCompleteProfile(userId)
+    }
 
     suspend fun postProfessionalProfile(profile: ProfessionalProfileRequest): Response<ProfileResponse> {
         Log.d("profileRepository", " Perfil enviado: $profile")

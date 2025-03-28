@@ -2,6 +2,7 @@ package com.example.myapplication.profile.domain
 
 import com.example.myapplication.profile.data.model.CertificationRequest
 import com.example.myapplication.profile.data.model.CertificationResponse
+import com.example.myapplication.profile.data.model.CompleteProfileResponse
 import com.example.myapplication.profile.data.model.EducationRequest
 import com.example.myapplication.profile.data.model.EducationResponse
 import com.example.myapplication.profile.data.model.ProfessionalProfileRequest
@@ -14,6 +15,11 @@ import com.example.myapplication.profile.data.repository.ProfileRepository
 import retrofit2.Response
 
 class ProfileUseCase(private val repository: ProfileRepository) {
+
+    suspend fun getCompleteProfile(userId: Int): Response<CompleteProfileResponse> {
+        return repository.getCompleteProfile(userId)
+    }
+
     suspend fun submitProfessionalProfile(profile: ProfessionalProfileRequest): Response<ProfileResponse> {
         return repository.postProfessionalProfile(profile)
     }

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.navigation.BottomNavigationBar
+import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.chat.data.model.Message
 
 @Composable
