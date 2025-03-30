@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+
 import coil.compose.rememberAsyncImagePainter
 import java.io.File
 
@@ -42,101 +43,60 @@ fun ProfilePicturePicker(
     onImageSelected: (Uri?) -> Unit
 ) {
     val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var cameraImageUri: Uri? by remember { mutableStateOf(null) }
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    val photosLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val uri = result.data?.data
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val uri = result.data?.data ?: cameraImageUri
         uri?.let {
             imageUri = it
             onImageSelected(it)
         }
     }
 
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            cameraImageUri?.let {
-                imageUri = it
-                onImageSelected(it)
-            }
+    // ✅ Mueve esta función antes de usarla
+    fun launchChooserIntent(context: Context) {
+        val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+            type = "image/*"
         }
-    }
 
-    // CAMARA
-    fun launchCamera() {
         val photoFile = File.createTempFile("profile_", ".jpg", context.cacheDir)
-        val uri = FileProvider.getUriForFile(
+        val photoUri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
             photoFile
         )
-        cameraImageUri = uri
-        cameraLauncher.launch(uri)
-    }
+        cameraImageUri = photoUri
 
-    // APP DE FOTOS DE GOOGLE
-    fun launchPhotosApp() {
-        val photosIntent = Intent(Intent.ACTION_PICK).apply {
-            type = "image/*"
-            `package` = "com.google.android.apps.photos"
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         }
-        val chooser = Intent.createChooser(photosIntent, "Selecciona una imagen")
-        context.startActivity(chooser)
+
+        val chooser = Intent.createChooser(pickIntent, "Selecciona una opción")
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+        launcher.launch(chooser)
     }
 
-    // PERMISO
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            launchCamera()
+    ) { granted ->
+        if (granted) {
+            launchChooserIntent(context) // ✅ Ya está declarada antes
         } else {
-            Toast.makeText(context, "Se necesita permiso de cámara", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
         }
     }
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Selecciona una opción") },
-            text = {
-                Column {
-                    Text("Galería", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                            photosLauncher.launch(galleryIntent)
-                            showDialog = false
-                        })
-                    Text("Fotos", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            launchPhotosApp()
-                            showDialog = false
-                        })
-                    Text("Cámara", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
-                            showDialog = false
-                        })
-                }
-            },
-            confirmButton = {}
-        )
-    }
-
-    // IMAGEN DE PERFIL
     Box(
         modifier = Modifier
             .size(100.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .clickable { showDialog = true },
+            .clickable {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            },
         contentAlignment = Alignment.Center
     ) {
         if (imageUri != null) {
@@ -156,4 +116,3 @@ fun ProfilePicturePicker(
         }
     }
 }
-
