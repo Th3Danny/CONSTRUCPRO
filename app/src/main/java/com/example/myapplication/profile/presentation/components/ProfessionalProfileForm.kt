@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.components.image.ProfilePicturePicker
 import com.example.myapplication.profile.data.model.ProfessionalProfileRequest
 import com.example.myapplication.profile.presentation.ProfileViewModel
 
@@ -79,23 +80,13 @@ fun ProfessionalProfileForm(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Imagen de perfil placeholder
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Foto de perfil",
-                    modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+            // Justo antes del Spacer para headline
+            ProfilePicturePicker { selectedUri ->
+                profileImageUrl = selectedUri?.toString() ?: ""
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
 
             // Campo Titular
             OutlinedTextField(

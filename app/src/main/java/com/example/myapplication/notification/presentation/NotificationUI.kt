@@ -1,7 +1,6 @@
 package com.example.myapplication.notification.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,16 +9,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.components.footer.BottomNavigationBar
-import com.example.myapplication.notification.data.model.Notification
-import com.example.myapplication.notification.presentation.components.EmptyNotifications
-import com.example.myapplication.notification.presentation.components.NotificationItem
+import com.example.myapplication.notification.presentation.notificationComponent.EmptyNotifications
+import com.example.myapplication.notification.presentation.notificationComponent.NotificationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

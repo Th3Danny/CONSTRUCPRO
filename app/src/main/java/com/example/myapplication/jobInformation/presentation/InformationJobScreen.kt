@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.components.footer.BottomNavigationBar
 import com.example.myapplication.jobInformation.data.model.InformationJobRequest
 import androidx.core.content.edit
+import androidx.lifecycle.LiveData
 import com.example.myapplication.jobInformation.presentation.componets.ErrorJobInformation
 import com.example.myapplication.jobInformation.presentation.componets.JobInformationItem
 import com.example.myapplication.jobInformation.presentation.componets.LoadingJobInformation
@@ -32,6 +33,8 @@ fun JobInformationScreen(
 ) {
     var selectedTab by remember { mutableStateOf("Trabajos") }
     val jobInfo by viewModel.info.observeAsState()
+
+
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState("")
 
@@ -42,18 +45,14 @@ fun JobInformationScreen(
             .getString("jobIdFromNotification", null)
     }
 
-    // Cargar información del trabajo
-    LaunchedEffect(jobId, jobIdFromNotification) {
-        val id = jobId ?: jobIdFromNotification
-        id?.let {
-            viewModel.fetchInformation(it)
 
-            // Limpiar el ID guardado en preferencias una vez usado
-            context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE).edit()
-                .remove("jobIdFromNotification")
-                .apply()
+    // Cargar información del trabajo
+    LaunchedEffect(jobIdFromNotification) {
+        jobIdFromNotification?.toIntOrNull()?.let { jobId ->
+            viewModel.fetchJobById(jobId.toString())
         }
     }
+
 
     Scaffold(
         topBar = {
@@ -90,7 +89,7 @@ fun JobInformationScreen(
                 error.isNotEmpty() -> {
                     ErrorJobInformation(error) {
                         val id = jobId ?: jobIdFromNotification
-                        id?.let { viewModel.fetchInformation(it) }
+                        id?.let { viewModel.fetchJobById(it) }
                     }
                 }
 
@@ -101,17 +100,19 @@ fun JobInformationScreen(
                             .fillMaxSize()
                             .padding(vertical = 16.dp)
                     ) {
-                        jobInfo?.let { info ->
+                        jobInfo?.let { info: InformationJobRequest ->
                             JobInformationItem(info)
                         }
+
                     }
                 }
+
 
                 else -> {
                     // Estado inicial sin datos
                     ErrorJobInformation("No se ha encontrado información del trabajo.") {
                         val id = jobId ?: jobIdFromNotification
-                        id?.let { viewModel.fetchInformation(it) }
+                        id?.let { viewModel.fetchJobById(it) }
                     }
                 }
             }

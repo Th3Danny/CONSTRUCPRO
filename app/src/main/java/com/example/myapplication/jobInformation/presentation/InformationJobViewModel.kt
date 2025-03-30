@@ -21,13 +21,13 @@ class InformationJobViewModel(private val getInformationUseCase: InformationJobU
     private val _error = MutableLiveData<String>("")
     val error: LiveData<String> = _error
 
-    fun fetchInformation(jobId: String) {
+    fun fetchJobById(jobId: String) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = ""
 
-                val result = getInformationUseCase(jobId)
+                val result = getInformationUseCase.getJobById(jobId)
                 _info.value = result.getOrNull()
 
                 if (result.isFailure) {

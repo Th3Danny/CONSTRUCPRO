@@ -178,9 +178,6 @@ fun LoadingJobInformation() {
     }
 }
 
-/**
- * Estado de error para la pantalla de información
- */
 @Composable
 fun ErrorJobInformation(message: String, onRetry: () -> Unit) {
     Box(

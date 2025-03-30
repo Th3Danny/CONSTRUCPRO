@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface InformationJobService {
-    @GET("jobs/{id}")
-    suspend fun getJobById(@Path("id") jobId: String): Response<InformationJobRequest>
+    @GET("jobs/{jobId}")
+    suspend fun getJobById(@Path("jobId") jobId: String): Response<InformationJobRequest>
 
 }

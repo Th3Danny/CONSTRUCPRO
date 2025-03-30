@@ -81,7 +81,12 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.work:work-gcm:2.8.1")
 
+    // CameraX dependencies
 
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
 
     //FireBase
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))

@@ -57,7 +57,7 @@ fun TopAppBarProfileComponent(
             }
 
             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-            launcherGallery.launch("image/*") // ✅ Esto abre la galería
+            launcherGallery.launch("image/*")
         } else {
             permissionLauncher.launch(permission)
         }
