@@ -9,3 +9,10 @@ data class InformationJobRequest(
     val like_count: Int,
     val time_restant: Int
 )
+
+data class ApiResponse<T>(
+    val data: T?,
+    val message: String?,
+    val success: Boolean,
+    val http_status: String?
+)

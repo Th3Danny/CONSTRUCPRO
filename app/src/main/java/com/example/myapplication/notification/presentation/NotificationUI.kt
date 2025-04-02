@@ -139,17 +139,6 @@ fun NotificationScreen(
                         items(notifications) { notification ->
                             NotificationItem(notification) {
 
-
-                                // Marcar como leída la notificación
-                               // notificationViewModel.markAsRead(notification.id)
-
-                                // Navegar según el tipo de notificación
-//                                when (notification.type) {
-//                                    "job_application" -> navController.navigate("JobInfo/${notification.entity_id}")
-//                                    "message" -> navController.navigate("Chat/${notification.entity_id}")
-//                                    "project" -> navController.navigate("Projects/${notification.entity_id}")
-//                                    else -> navController.navigate("Home")
-//                                }
                                 navController.navigate("JobInfo")
                             }
                         }

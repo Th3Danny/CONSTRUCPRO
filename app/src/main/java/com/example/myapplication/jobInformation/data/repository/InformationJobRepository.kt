@@ -10,9 +10,13 @@ class InformationJobRepository {
         return try {
             val response = infoService.getJobById(jobId)
             if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
-                } ?: Result.failure(Exception("Respuesta vacía"))
+                val apiResponse = response.body()
+                val jobInfo = apiResponse?.data
+                if (jobInfo != null) {
+                    Result.success(jobInfo)
+                } else {
+                    Result.failure(Exception("No se encontró la información del trabajo"))
+                }
             } else {
                 Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
             }
@@ -20,5 +24,5 @@ class InformationJobRepository {
             Result.failure(e)
         }
     }
-
 }
+
