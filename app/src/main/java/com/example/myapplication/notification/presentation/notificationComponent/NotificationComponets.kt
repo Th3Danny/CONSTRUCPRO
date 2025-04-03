@@ -13,12 +13,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.notification.data.model.Notification
+import com.example.myapplication.utils.parseNotificationData
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 @Composable
 fun NotificationItem(notification: Notification, onClick: () -> Unit) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()

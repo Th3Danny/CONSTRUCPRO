@@ -12,3 +12,4 @@ fun parseNotificationData(json: String?): NotificationData? {
         null
     }
 }
+

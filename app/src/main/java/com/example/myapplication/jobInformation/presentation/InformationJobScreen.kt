@@ -23,6 +23,7 @@ import androidx.lifecycle.LiveData
 import com.example.myapplication.jobInformation.presentation.componets.ErrorJobInformation
 import com.example.myapplication.jobInformation.presentation.componets.JobInformationItem
 import com.example.myapplication.jobInformation.presentation.componets.LoadingJobInformation
+import com.example.myapplication.utils.parseNotificationData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,26 +34,42 @@ fun JobInformationScreen(
 ) {
     var selectedTab by remember { mutableStateOf("Trabajos") }
     val jobInfo by viewModel.info.observeAsState()
-
-
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState("")
 
-    // Obtener el ID del trabajo desde las preferencias si no viene como parámetro
     val context = LocalContext.current
+
+    // Leer el ID y los datos desde las preferencias
     val jobIdFromNotification = remember {
         context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
             .getString("jobIdFromNotification", null)
     }
 
+    val rawJson = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        .getString("jobDataFromNotification", null)
 
-    // Cargar información del trabajo
+    println("🧾 JSON crudo desde prefs: $rawJson")
+
+    val notificationExtras = remember {
+        rawJson?.let { parseNotificationData(it) }
+    }
+
+
+
+
+    // Log para verificar datos
+    LaunchedEffect(notificationExtras) {
+        println(" Parsed NotificationData: $notificationExtras")
+        println(" Número de teléfono: ${notificationExtras?.companyPhone}")
+    }
+
+    // Cargar información del trabajo si no se recibió por parámetro
     LaunchedEffect(jobIdFromNotification) {
         jobIdFromNotification?.toIntOrNull()?.let { jobId ->
+            println("🔄 Cargando trabajo con ID desde notificación: $jobId")
             viewModel.fetchJobById(jobId.toString())
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -60,9 +77,7 @@ fun JobInformationScreen(
                 title = {
                     Text(
                         "Información del Trabajo",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -94,22 +109,18 @@ fun JobInformationScreen(
                 }
 
                 jobInfo != null -> {
-                    // Mostrar la información del trabajo
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(vertical = 16.dp)
                     ) {
-                        jobInfo?.let { info: InformationJobRequest ->
-                            JobInformationItem(info)
+                        jobInfo?.let { info ->
+                            JobInformationItem(info, notificationExtras?.companyPhone)
                         }
-
                     }
                 }
 
-
                 else -> {
-                    // Estado inicial sin datos
                     ErrorJobInformation("No se ha encontrado información del trabajo.") {
                         val id = jobId ?: jobIdFromNotification
                         id?.let { viewModel.fetchJobById(it) }

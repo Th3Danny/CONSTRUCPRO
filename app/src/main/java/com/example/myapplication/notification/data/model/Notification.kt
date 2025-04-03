@@ -9,11 +9,12 @@ data class Notification(
 )
 
 data class NotificationData(
+    val jobTitle: String?,
+    val companyName: String?,
+    val timestamp: String?,
     val jobId: String?,
     val companyPhone: String?,
-    val companyName: String?,
-    val jobTitle: String?,
-    val navigateTo: String?,
     val notificationType: String?,
-    val timestamp: String?
+    val navigateTo: String?
 )
+

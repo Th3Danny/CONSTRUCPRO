@@ -38,22 +38,44 @@ class PushNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        val destination = remoteMessage.data["navigateTo"]
-        val jobId = remoteMessage.data["jobId"]
+        val dataMap = remoteMessage.data
 
+        // 🔍 Extraer campos clave
+        val destination = dataMap["navigateTo"]
+        val jobId = dataMap["jobId"]
+        val companyPhone = dataMap["companyPhone"]
+
+        // 🧠 Log para verificar cada campo
+        Log.d("📥 FCM", "✅ Datos recibidos:")
+        Log.d("📥 FCM", "jobId: $jobId")
+        Log.d("📥 FCM", "navigateTo: $destination")
+        Log.d("📥 FCM", "companyPhone: $companyPhone")
+
+        // Convertir todo el mapa en un JSON
+        val gson = com.google.gson.Gson()
+        val jsonString = gson.toJson(dataMap)
+
+        Log.d("📥 FCM", "JSON completo: $jsonString")
+
+        // Guardar en SharedPreferences
         val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().apply {
             putString("navigateTo", destination)
             putString("jobIdFromNotification", jobId)
+            putString("companyPhoneFromNotification", companyPhone)
+            putString("jobDataFromNotification", jsonString)
             apply()
         }
 
+        // Mostrar notificación
         showNotification(
-            title = remoteMessage.data["title"] ?: "Notificación",
-            message = remoteMessage.data["body"] ?: "Tienes una nueva notificación",
+            title = dataMap["title"] ?: "Notificación",
+            message = dataMap["body"] ?: "Tienes una nueva notificación",
             navigateTo = destination ?: ""
         )
     }
+
+
 
 
 

@@ -1,5 +1,9 @@
 package com.example.myapplication.jobInformation.presentation.componets
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,11 +12,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.jobInformation.data.model.InformationJobRequest
 @Composable
-fun JobInformationItem(info: InformationJobRequest) {
+fun JobInformationItem(info: InformationJobRequest, companyPhoneFromNotification: String? = null) {
+    val context = LocalContext.current
+    val rawPhone = companyPhoneFromNotification ?: info.companyPhone ?: ""
+
+    val cleanedPhone = rawPhone.filter { it.isDigit() }
+    val phoneForWhatsApp = "52$cleanedPhone"
+    val phoneForDial = cleanedPhone
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,6 +63,7 @@ fun JobInformationItem(info: InformationJobRequest) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             JobDetailRow(
                 icon = Icons.Default.LocationOn,
                 label = "Ubicación",
@@ -74,6 +88,41 @@ fun JobInformationItem(info: InformationJobRequest) {
                 label = "Likes",
                 value = "${info.like_count ?: 0}"
             )
+
+
+
+            JobDetailRow(
+                icon = Icons.Default.Phone,
+                label = "Contacto",
+                value = if (cleanedPhone.isEmpty()) "No disponible" else cleanedPhone,
+                onClick = {
+                    if (cleanedPhone.isNotEmpty()) {
+                        // Intent para marcar
+                        val intentDial = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneForDial"))
+
+                        // Intent para WhatsApp con mensaje
+                        val message = "Hola, estoy interesado en la vacante de ${info.title ?: "tu empresa"}"
+                        val uriWhatsApp = Uri.parse("https://api.whatsapp.com/send?phone=$phoneForWhatsApp&text=${Uri.encode(message)}")
+                        val intentWhatsApp = Intent(Intent.ACTION_VIEW, uriWhatsApp)
+
+                        val pm = context.packageManager
+                        val canOpenWhatsApp = intentWhatsApp.resolveActivity(pm) != null
+
+                        val chooser = Intent.createChooser(intentDial, "Selecciona una app")
+
+                        if (canOpenWhatsApp) {
+                            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(intentWhatsApp))
+                        } else {
+                            Toast.makeText(context, "WhatsApp no está disponible", Toast.LENGTH_SHORT).show()
+                        }
+
+                        context.startActivity(chooser)
+                    }
+                }
+            )
+
+
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -115,15 +164,25 @@ fun JobInformationItem(info: InformationJobRequest) {
 
 @Composable
 fun JobDetailRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     label: String,
     value: String,
-    highlight: Boolean = false
+    highlight: Boolean = false,
+    onClick: (() -> Unit)? = null
 ) {
-    Row(
-        modifier = Modifier
+    val rowModifier = if (onClick != null) {
+        Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable { onClick() }
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    }
+
+    Row(
+        modifier = rowModifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -152,9 +211,7 @@ fun JobDetailRow(
     }
 }
 
-/**
- * Estado de carga para la pantalla de información
- */
+
 @Composable
 fun LoadingJobInformation() {
     Box(
