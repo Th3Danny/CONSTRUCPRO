@@ -9,7 +9,7 @@ import com.example.myapplication.job.presentation.JobViewModel
 class JobUpdateReceiver(private val viewModel: JobViewModel) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val type = intent?.getStringExtra("job_update_type")
-        android.util.Log.d("📡 JobUpdateReceiver", "📥 Recibido tipo: $type")
+        android.util.Log.d("📡 JobUpdateReceiver", " Recibido tipo: $type")
 
         when (type) {
             "NEW_JOB" -> viewModel.refreshJobs()
