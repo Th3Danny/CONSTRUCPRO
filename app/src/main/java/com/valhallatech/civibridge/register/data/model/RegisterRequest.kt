@@ -1,0 +1,10 @@
+package com.valhallatech.civibridge.register.data.model
+
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val username: String,
+    val name: String,
+    val fcm: String,
+    val roles: List<String> = listOf("USER")
+)

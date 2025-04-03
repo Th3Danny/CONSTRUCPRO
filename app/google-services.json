@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:561280487908:android:adc344f4eb9f0bad3277f1",
+        "mobilesdk_app_id": "1:561280487908:android:edf708f86aa00ffe3277f1",
         "android_client_info": {
-          "package_name": "com.example.myapplication"
+          "package_name": "com.valhallatech.civibridge"
         }
       },
       "oauth_client": [],

@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.valhallatech.civibridge"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.valhallatech.civibridge"
         minSdk = 34
         targetSdk = 35
         versionCode = 1
@@ -93,6 +93,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     //implementation(platform("com.google.firebase:firebase-bom:32.7.2"))  Versión recomendada
     implementation("com.google.firebase:firebase-messaging-ktx")
+    // build.gradle (nivel app)
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
+
     implementation(libs.firebase.firestore.ktx) // FCM para Kotlin
 
     testImplementation(libs.junit)
