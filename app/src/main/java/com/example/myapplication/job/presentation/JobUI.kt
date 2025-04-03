@@ -1,6 +1,9 @@
 package com.example.myapplication.job.presentation
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.components.nav.TopAppBarProfileComponent
 import com.example.myapplication.components.footer.BottomNavigationBar
+import com.example.myapplication.core.broadcast.JobUpdateReceiver
 import com.example.myapplication.job.data.model.JobApplication
 import com.example.myapplication.login.presentation.LoginViewModel
 import com.example.myapplication.ui.theme.ErrorColor
@@ -37,17 +41,45 @@ import com.example.myapplication.ui.theme.WarningColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JobScreen(navController: NavController, jobViewModel: JobViewModel, loginViewModel: LoginViewModel) {
-    val jobs by jobViewModel.jobs.observeAsState(emptyList())
-    val pendingJobs by jobViewModel.pendingJobs.observeAsState(emptyList())
-    val acceptedJobs by jobViewModel.acceptedJobs.observeAsState(emptyList())
+    val jobs by jobViewModel.jobs.collectAsState()
+    val pendingJobs by jobViewModel.pendingJobs.collectAsState()
+    val acceptedJobs by jobViewModel.acceptedJobs.collectAsState()
+
     var selectedTab by remember { mutableStateOf("Ofertas") }
 
     val context = LocalContext.current
     val sharedPreferences = remember { context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE) }
     val applicantId = remember { sharedPreferences.getInt("userId", -1) }
 
+    val jobUpdateReceiver = remember {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val type = intent?.getStringExtra("job_update_type")
+                Log.d("📡 JobUpdateReceiver", "📥 Recibido tipo: $type")
 
+                when (type) {
+                    "NEW_JOB" -> jobViewModel.refreshJobs()
+                    "JOB_APPLIED" -> jobViewModel.refreshPendingJobs()
+                    "JOB_ACCEPTED" -> jobViewModel.refreshAcceptedJobs()
+                    "JOB_Apply" -> jobViewModel.refreshApplyJobs()
+                    "REFRESH_ALL" -> {
+                        jobViewModel.refreshJobs()
+                        jobViewModel.refreshPendingJobs()
+                        jobViewModel.refreshAcceptedJobs()
+                    }
+                }
+            }
+        }
+    }
 
+    DisposableEffect(Unit) {
+        val intentFilter = IntentFilter("com.example.UPDATE_JOB_DATA")
+        context.registerReceiver(jobUpdateReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+
+        onDispose {
+            context.unregisterReceiver(jobUpdateReceiver)
+        }
+    }
 
     Column(
         modifier = Modifier

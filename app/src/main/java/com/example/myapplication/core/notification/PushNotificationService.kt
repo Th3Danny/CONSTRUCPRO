@@ -44,20 +44,20 @@ class PushNotificationService : FirebaseMessagingService() {
         val destination = dataMap["navigateTo"]
         val jobId = dataMap["jobId"]
         val companyPhone = dataMap["companyPhone"]
+        val notificationType = dataMap["notificationType"]
 
-        // 🧠 Log para verificar cada campo
+        // 🧠 Logs de depuración
         Log.d("📥 FCM", "✅ Datos recibidos:")
         Log.d("📥 FCM", "jobId: $jobId")
         Log.d("📥 FCM", "navigateTo: $destination")
         Log.d("📥 FCM", "companyPhone: $companyPhone")
+        Log.d("📥 FCM", "notificationType: $notificationType")
 
-        // Convertir todo el mapa en un JSON
+        // 🔄 Convertir todo el mapa a JSON para guardar en SharedPreferences
         val gson = com.google.gson.Gson()
         val jsonString = gson.toJson(dataMap)
-
         Log.d("📥 FCM", "JSON completo: $jsonString")
 
-        // Guardar en SharedPreferences
         val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().apply {
             putString("navigateTo", destination)
@@ -67,15 +67,33 @@ class PushNotificationService : FirebaseMessagingService() {
             apply()
         }
 
-        // Mostrar notificación
+        // 🔁 Determinar tipo de broadcast a enviar
+        val mappedType = when (notificationType) {
+            "NEW_JOB" -> "NEW_JOB"
+            "APPLICATION_RECEIVED" -> "JOB_APPLIED"
+            "JOB_ACCEPTANCE" -> "JOB_ACCEPTED"
+            "JOB_Apply" -> "JOB_Apply"
+            else -> "REFRESH_ALL"
+        }
+
+        // 📡 Enviar broadcast a la app
+        val updateIntent = Intent("com.example.UPDATE_JOB_DATA").apply {
+            putExtra("job_update_type", mappedType)
+        }
+
+// 🔍 Log para confirmar el envío
+        Log.d("📡 FCM-Broadcast", "🔔 Enviando broadcast con tipo: $mappedType")
+
+        sendBroadcast(updateIntent)
+
+
+        // 🔔 Mostrar notificación
         showNotification(
             title = dataMap["title"] ?: "Notificación",
             message = dataMap["body"] ?: "Tienes una nueva notificación",
             navigateTo = destination ?: ""
         )
     }
-
-
 
 
 

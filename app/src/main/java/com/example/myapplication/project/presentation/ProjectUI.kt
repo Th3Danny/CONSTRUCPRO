@@ -35,9 +35,9 @@ import com.example.myapplication.ui.theme.WarningColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectScreen(navController: NavController, jobViewModel: JobViewModel, loginViewModel: LoginViewModel) {
-    val jobs by jobViewModel.jobs.observeAsState(emptyList())
-    val pendingJobs by jobViewModel.pendingJobs.observeAsState(emptyList())
-    val acceptedJobs by jobViewModel.acceptedJobs.observeAsState(emptyList())
+    val jobs by jobViewModel.jobs.collectAsState()
+    val pendingJobs by jobViewModel.pendingJobs.collectAsState()
+    val acceptedJobs by jobViewModel.acceptedJobs.collectAsState()
     var selectedTab by remember { mutableStateOf("Aceptados") }
 
     val context = LocalContext.current

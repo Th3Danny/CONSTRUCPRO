@@ -4,16 +4,16 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.job.data.model.Job
 import com.example.myapplication.job.data.model.JobApplication
 import com.example.myapplication.job.domain.GetAcceptedJobsUseCase
 import com.example.myapplication.job.domain.GetJobsUseCase
 import com.example.myapplication.job.domain.GetPendingJobsUseCase
 import com.example.myapplication.job.domain.PostJobsUseCase
-
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class JobViewModel(
     private val context: Context,
@@ -21,20 +21,19 @@ class JobViewModel(
     private val getPendingJobsUseCase: GetPendingJobsUseCase,
     private val getAcceptedJobsUseCase: GetAcceptedJobsUseCase,
     private val postJobsUseCase: PostJobsUseCase
-
 ) : ViewModel() {
 
-    private val _jobs = MutableLiveData<List<Job>>()
-    val jobs: LiveData<List<Job>> = _jobs
+    private val _jobs = MutableStateFlow<List<Job>>(emptyList())
+    val jobs: StateFlow<List<Job>> = _jobs.asStateFlow()
 
-    private val _pendingJobs = MutableLiveData<List<JobApplication>>()
-    val pendingJobs: LiveData<List<JobApplication>> = _pendingJobs
+    private val _pendingJobs = MutableStateFlow<List<JobApplication>>(emptyList())
+    val pendingJobs: StateFlow<List<JobApplication>> = _pendingJobs.asStateFlow()
 
-    private val _acceptedJobs = MutableLiveData<List<JobApplication>>()
-    val acceptedJobs: LiveData<List<JobApplication>> = _acceptedJobs
+    private val _acceptedJobs = MutableStateFlow<List<JobApplication>>(emptyList())
+    val acceptedJobs: StateFlow<List<JobApplication>> = _acceptedJobs.asStateFlow()
 
-    private val _applicationSuccess = MutableLiveData<Boolean>()
-    val applicationSuccess: LiveData<Boolean> = _applicationSuccess
+    private val _applicationSuccess = MutableStateFlow<Boolean?>(null)
+    val applicationSuccess: StateFlow<Boolean?> = _applicationSuccess.asStateFlow()
 
     init {
         fetchJobs()
@@ -42,20 +41,20 @@ class JobViewModel(
         fetchAcceptedJobs()
     }
 
-    private fun fetchJobs() {
+    fun fetchJobs() {
         viewModelScope.launch {
             val result = getJobsUseCase()
             result.onSuccess { jobList ->
-                Log.d("JobViewModel", " Trabajos actualizados en LiveData: ${jobList.size}")
+                Log.d("JobViewModel", " Trabajos actualizados en StateFlow: ${jobList.size}")
                 _jobs.value = jobList
             }.onFailure { e ->
-                Log.e("JobViewModel", " Error actualizando LiveData: ${e.message}")
+                Log.e("JobViewModel", " Error actualizando StateFlow: ${e.message}")
                 _jobs.value = emptyList()
             }
         }
     }
 
-    private fun fetchPendingJobs() {
+    fun fetchPendingJobs() {
         viewModelScope.launch {
             val result = getPendingJobsUseCase()
             result.onSuccess { pendingList ->
@@ -66,7 +65,7 @@ class JobViewModel(
         }
     }
 
-    private fun fetchAcceptedJobs() {
+    fun fetchAcceptedJobs() {
         viewModelScope.launch {
             val result = getAcceptedJobsUseCase()
             result.onSuccess { acceptedList ->
@@ -89,4 +88,20 @@ class JobViewModel(
         }
     }
 
+    fun refreshJobs() {
+        fetchJobs()
+    }
+
+    fun refreshPendingJobs() {
+        fetchPendingJobs()
+    }
+
+    fun refreshAcceptedJobs() {
+        fetchAcceptedJobs()
+    }
+
+    fun refreshApplyJobs() {
+        fetchPendingJobs()
+        fetchAcceptedJobs()
+    }
 }

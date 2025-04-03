@@ -56,7 +56,6 @@ fun JobInformationScreen(
 
 
 
-
     // Log para verificar datos
     LaunchedEffect(notificationExtras) {
         println(" Parsed NotificationData: $notificationExtras")

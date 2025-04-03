@@ -18,7 +18,7 @@ import com.example.myapplication.login.presentation.LoginViewModel
 
 @Composable
 fun HomeScreen(navController: NavController, jobViewModel: JobViewModel, loginViewModel: LoginViewModel) {
-    val jobs by jobViewModel.jobs.observeAsState(emptyList())
+    val jobs by jobViewModel.jobs.collectAsState()
     var selectedTab by remember { mutableStateOf("Jobs") }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -29,7 +29,6 @@ fun HomeScreen(navController: NavController, jobViewModel: JobViewModel, loginVi
             modifier = Modifier.padding(16.dp)
         )
 
-        //  Agregar pestañas para cambiar entre Jobs y Posts
         TabRow(
             selectedTabIndex = if (selectedTab == "Jobs") 0 else 1,
             modifier = Modifier.fillMaxWidth()
@@ -48,16 +47,14 @@ fun HomeScreen(navController: NavController, jobViewModel: JobViewModel, loginVi
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        //  Mostrar la sección correspondiente
         when (selectedTab) {
-            "Jobs" -> JobScreen(navController, jobViewModel, loginViewModel )
-
+            "Jobs" -> JobScreen(navController, jobViewModel, loginViewModel)
         }
 
-        //  Agregar la barra de navegación al final
         BottomNavigationBar(navController, selectedTab) { selectedTab = it }
     }
 }
+
 
 
 
